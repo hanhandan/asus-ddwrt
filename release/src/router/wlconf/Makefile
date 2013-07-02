@@ -17,14 +17,10 @@ CFLAGS	+= -I. -I$(TOP)/shared -I$(SRCBASE)/include -Wall
 #CFLAGS	+= -g -DDEBUG
 CFLAGS	+= -s -Os -DBCMWPA2 $(EXTRACFLAGS)
 LDFLAGS	+= -L$(TOP)/nvram -lnvram -L$(TOP)/shared -lshared
-LDFLAGS += $(EXTRA_LDFLAGS)
 
 
 OBJS := wlconf.o
-ifeq ($(RTCONFIG_BCMWL6),y)
-OBJS += bcmwifi_channels.o
-endif
-vpath %.c $(SRCBASE)/wlconf $(SRCBASE)/shared
+vpath %.c $(SRCBASE)/wlconf
 
 ifeq ($(wildcard $(SRCBASE)/wlconf/*.c),)
 all:
