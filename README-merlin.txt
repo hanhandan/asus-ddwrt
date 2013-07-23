@@ -34,7 +34,7 @@ Features
 Here is a list of features that Asuswrt-merlin brings over the original firmware:
 
 System:
-   - Based on pre-release 3.0.0.4.372 sources from Asus
+   - Based on pre-release 3.0.0.4.372_1363 sources from Asus
    - Various bugfixes all over the place
    - Some components were updated to their latest versions, for improved stability
      and security
@@ -442,12 +442,18 @@ https://github.com/RMerl/asuswrt-merlin
 History
 -------
 3.0.0.4.372.31:
-   - NEW: Added support for newest RT-N66U hardware revision.
-          This router has a new model of flash, you can NOT
-          use any older FW on these. (RT-N66U)
+   - NEW: Merged with 372_1363 code from Asus.
    - FIXED: Sysinfo page was reporting IPv6 as reason for
             CTF to be disabled - since 372 that is only true
             for ARM devices.
+   - FIXED: OpenVPN Server in TAP mode + DHCP wasn't routing
+            properly (DHCP was overruling the default GW)
+
+
+3.0.0.4.372_30_3:
+   - NEW: Added support for newest RT-N66U hardware revision.
+          This router has a new model of flash, you can NOT
+          use any older FW on these. (RT-N66U)
 
 
 3.0.0.4.372.30_2:
@@ -484,7 +490,7 @@ History
    - CHANGED: Renamed Advanced (Per IP) Traffic monitoring for
               IPTraffic (to match the Tomato name for that same
               functionality)
-   - FIXED: GRO kills upload speed if CTF is disabled (patched provided 
+   - FIXED: GRO kills upload speed if CTF is disabled (patch provided 
             by Asus, RT-AC56U)
    - FIXED: Buffer overrun in NVRAM handling, leading to random crashes
             (Asus bug, RT-AC56U)

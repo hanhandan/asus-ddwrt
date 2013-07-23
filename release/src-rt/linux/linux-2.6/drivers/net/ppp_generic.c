@@ -45,6 +45,7 @@
 #include <linux/stddef.h>
 #include <linux/device.h>
 #include <linux/mutex.h>
+#include <linux/ppp_async.h>
 #include <net/slhc_vj.h>
 #include <asm/atomic.h>
 
