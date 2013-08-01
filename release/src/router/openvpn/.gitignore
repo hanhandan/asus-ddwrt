@@ -13,11 +13,9 @@ images/Makefile
 aclocal.m4
 Makefile
 configure.h
-configure
 autom4te.cache
 config.h
 libtool
 .libs
 src/openvpn/openvpn
 version.sh
-Makefile.in
