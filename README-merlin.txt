@@ -64,6 +64,7 @@ Networking:
      Keith Moyer for Tomato and reused with his permission. (RT-N66U, RT-AC66U)
    - Option to control Spanning-Tree Protocol support.
    - Netfilter ipset module, for efficient blacklist implemetnation
+   - IPv6 firewall rules
 
 Web interface:
    - Improved client list, with DHCP hostnames
@@ -483,6 +484,13 @@ History
 -------
 3.0.0.4.372.32:
    - NEW: wan-start script will get passed the WAN unit number as argument
+   - NEW: Webui option to select the location of the DLNA database (patch by
+          VinceV)
+   - NEW: IPv6 firewalling.  Originally, Asuswrt would allow any IPv6 traffic 
+          to be forwarded to your LAN devices.  This new option (enabled by
+          default) will prevent traffic forwarding to LAN devices.  You can
+          enable the firewall, and define inbound rules as well on the new
+          Firewall -> IPv6 Firewall page.
    - CHANGED: Upgraded OpenVPN to 2.3.2
    - CHANGED: Implemented IPTraffic support in DualWAN - Load balanced
               mode (Experimental builds)
@@ -491,6 +499,10 @@ History
    - CHANGED: Updated 2.6.36 kernel to the latest code used
               in 372_184 (RT-AC56U), includes some changes
               related to USB3, and PPP/CTF.
+   - CHANGED: Smarter location selection for the DLNA database
+              location to reduce the chances of having it in
+              RAM if left to default location, filling it up 
+              (patch by VinceV)
    - FIXED: web server would crash if you entered too much data in
             OpenVPN key/cert fields.
 

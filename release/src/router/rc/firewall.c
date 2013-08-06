@@ -1963,7 +1963,11 @@ filter_setting(char *wan_if, char *wan_ip, char *lan_if, char *lan_ip, char *log
 
 #ifdef RTCONFIG_IPV6
 	if (ipv6_enabled()){
-		fprintf(fp_ipv6, "*filter\n:INPUT ACCEPT [0:0]\n:FORWARD ACCEPT [0:0]\n:OUTPUT ACCEPT [0:0]\n");
+		if (nvram_match("ipv6_fw_enable", "1")){
+			fprintf(fp_ipv6, "*filter\n:INPUT ACCEPT [0:0]\n:FORWARD DROP [0:0]\n:OUTPUT ACCEPT [0:0]\n");
+		} else {
+			fprintf(fp_ipv6, "*filter\n:INPUT ACCEPT [0:0]\n:FORWARD ACCEPT [0:0]\n:OUTPUT ACCEPT [0:0]\n");
+		}
 #ifdef RTCONFIG_PARENTALCTRL
 		fprintf(fp_ipv6, ":PControls - [0:0]\n");
 #else
@@ -2229,8 +2233,13 @@ TRACE_PT("writing Parental Control\n");
 
 #ifdef RTCONFIG_IPV6
 	if (ipv6_enabled())
-	fprintf(fp_ipv6,
-		"-A FORWARD -m rt --rt-type 0 -j DROP\n");
+	{
+		if (nvram_match("ipv6_fw_enable", "1"))
+		{
+			fprintf(fp_ipv6, "-A FORWARD -m state --state ESTABLISHED,RELATED -j %s\n", logaccept);
+		}
+		fprintf(fp_ipv6,"-A FORWARD -m rt --rt-type 0 -j DROP\n");
+	}
 #endif
 
 // oleg patch ~
@@ -2274,8 +2283,14 @@ TRACE_PT("writing Parental Control\n");
 	/* Filter out invalid WAN->WAN connections */
 	fprintf(fp, "-A FORWARD -o %s ! -i %s -j %s\n", wan_if, lan_if, logdrop);
 #ifdef RTCONFIG_IPV6
-	if (ipv6_enabled() && *wan6face)
-	fprintf(fp_ipv6, "-A FORWARD -o %s ! -i %s -j %s\n", wan6face, lan_if, logdrop);
+	if (ipv6_enabled() && *wan6face) {
+
+		if (nvram_match("ipv6_fw_enable", "1")) {
+			fprintf(fp_ipv6, "-A FORWARD -o %s -i %s -j %s\n", wan6face, lan_if, logaccept);
+		} else {	// The default DROP rule from the IPv6 firewall would take care of it
+			fprintf(fp_ipv6, "-A FORWARD -o %s ! -i %s -j %s\n", wan6face, lan_if, logdrop);
+		}
+	}
 #endif
 
 	wanx_if = nvram_safe_get(strcat_r(prefix, "ifname", tmp));
@@ -2383,6 +2398,41 @@ TRACE_PT("writing Parental Control\n");
 
 
 		fprintf(fp_ipv6, "-A OUTPUT -m rt --rt-type 0 -j %s\n", logdrop);
+
+		// IPv6 firewall - allowed traffic
+		if (nvram_match("ipv6_fw_enable", "1")) {
+
+			nvp = nv = strdup(nvram_safe_get("ipv6_fw_rulelist"));
+			while (nv && (b = strsep(&nvp, "<")) != NULL) {
+				char *portv, *portp, *port, *desc, *dstports;
+				char srciprule[64];
+
+				if ((vstrsep(b, ">", &desc, &srcip, &dstip, &port, &proto) != 5))
+					continue;
+
+				if (srcip[0] != '\0')
+					snprintf(srciprule, sizeof(srciprule), "-s %s", srcip);
+				else
+					srciprule[0] = '\0';
+
+				portp = portv = strdup(port);
+				while (portv && (dstports = strsep(&portp, ",")) != NULL) {
+					if (strcmp(proto, "TCP") == 0 || strcmp(proto, "BOTH") == 0)
+						fprintf(fp_ipv6, "-A FORWARD -m state --state NEW -p tcp -m tcp %s -d %s --dport %s -j %s\n", srciprule, dstip, dstports, logaccept);
+					if (strcmp(proto, "UDP") == 0 || strcmp(proto, "BOTH") == 0)
+						fprintf(fp_ipv6, "-A FORWARD -m state --state NEW -p udp -m udp %s -d %s --dport %s -j %s\n", srciprule, dstip, dstports, logaccept);
+/*
+                                // Handle raw protocol in port field, no val1:val2 allowed
+                                if (strcmp(proto, "OTHER") == 0) {
+                                        protono = strsep(&c, ":");
+                                        fprintf(fp_ipv6, "-A FORWARD -p %s -d %s -j %s\n", protono, dstip, logaccept);
+                                }
+*/
+				}
+				free(portv);
+			}
+		}
+
 	}
 #endif
 
@@ -2802,6 +2852,11 @@ TRACE_PT("filterstr %s %s\n", timef, filterstr);
 #ifdef RTCONFIG_IPV6
 	if (ipv6_enabled())
 	{
+		// Default rule
+		if (nvram_match("ipv6_fw_enable", "1"))
+		{
+			fprintf(fp_ipv6, "-A FORWARD -j %s\n", logdrop);
+		}
 		fprintf(fp_ipv6, "COMMIT\n\n");
 		fclose(fp_ipv6);
 		eval("ip6tables-restore", "/tmp/filter_rules_ipv6");
@@ -2865,7 +2920,11 @@ filter_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)
 	fprintf(fp, ":logaccept - [0:0]\n:logdrop - [0:0]\n");
 #ifdef RTCONFIG_IPV6
 	if (ipv6_enabled()){
-		fprintf(fp_ipv6, "*filter\n:INPUT ACCEPT [0:0]\n:FORWARD ACCEPT [0:0]\n:OUTPUT ACCEPT [0:0]\n");
+		if (nvram_match("ipv6_fw_enable", "1")){
+			fprintf(fp_ipv6, "*filter\n:INPUT ACCEPT [0:0]\n:FORWARD DROP [0:0]\n:OUTPUT ACCEPT [0:0]\n");
+		} else {
+			fprintf(fp_ipv6, "*filter\n:INPUT ACCEPT [0:0]\n:FORWARD ACCEPT [0:0]\n:OUTPUT ACCEPT [0:0]\n");
+		}
 #ifdef RTCONFIG_PARENTALCTRL
 		fprintf(fp_ipv6, ":PControls - [0:0]\n");
 #else
@@ -3815,6 +3874,11 @@ TRACE_PT("filterstr %s %s\n", timef, filterstr);
 #ifdef RTCONFIG_IPV6
 	if (ipv6_enabled())
 	{
+		// Default rule
+		if (nvram_match("ipv6_fw_enable", "1"))
+		{
+			fprintf(fp_ipv6, "-A FORWARD -j %s\n", logdrop);
+		}
 		fprintf(fp_ipv6, "COMMIT\n\n");
 		fclose(fp_ipv6);
 		eval("ip6tables-restore", "/tmp/filter_rules_ipv6");
