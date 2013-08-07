@@ -453,7 +453,7 @@ function changeBgColor(obj, num){
 			<div class="formfontdesc">All outbound traffic coming from IPv6 hosts on your LAN is allowed, as well
                         as related inbound traffic.  Any other inbound traffic must be specifically allowed here.</div>
 			<div class="formfontdesc">You can leave the remote IP empty to allow traffic from any remote host.
-                        A subnet can also be specified (2001::111:222:333/64 for example).
+                        A subnet can also be specified (2001::111:222:333::/64 for example).
 		</div>
 			
 		<table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" class="FormTable">
