@@ -12,7 +12,7 @@
 <link rel="stylesheet" type="text/css" href="index_style.css"> 
 <link rel="stylesheet" type="text/css" href="form_style.css">
 <script language="JavaScript" type="text/javascript" src="/state.js"></script>
-<script type="text/javascript" language="JavaScript" src="/help.js"></script>
+<script language="JavaScript" type="text/javascript" src="/help.js"></script>
 <script language="JavaScript" type="text/javascript" src="/general.js"></script>
 <script language="JavaScript" type="text/javascript" src="/popup.js"></script>
 <script language="JavaScript" type="text/javascript" src="/client_function.js"></script>
@@ -126,16 +126,15 @@ function addRow(obj, head){
 }
 
 function validForm(){
-	
 	if(!Block_chars(document.form.ipv6_fw_desc_x_0, ["<" ,">" ,"'" ,"%"])){
 				return false;		
 	}	
+
 	if(!Block_chars(document.form.ipv6_fw_port_x_0, ["<" ,">"])){
 				return false;		
 	}	
 
 	if(document.form.ipv6_fw_proto_x_0.value=="OTHER"){
-		document.form.ipv6_fw_lport_x_0.value = "";
 		if (!check_multi_range(document.form.ipv6_fw_port_x_0, 1, 255, false))
 			return false;
 	}
@@ -179,36 +178,6 @@ function addRow_Group(upper){
 				return;
 		}	
 
-//Viz check same rule  //match(out port+out_proto) is not accepted
-	if(item_num >=2){
-/* ToDO: adapt to our needs */
-/*
-		for(i=0; i<rule_num; i++){
-				if(entry_cmp($('ipv6_fw_rulelist_table').rows[i].cells[4].innerHTML.toLowerCase(), document.form.ipv6_fw_proto_x_0.value.toLowerCase(), 3)==0 
-				|| document.form.ipv6_fw_proto_x_0.value == 'BOTH'
-				|| $('ipv6_fw_rulelist_table').rows[i].cells[4].innerHTML == 'BOTH'){
-						
-						if(overlib_str[i]){
-							if(document.form.ipv6_fw_port_x_0.value == overlib_str[i]){
-									alert("<#JS_duplicate#>");
-									document.form.ipv6_fw_port_x_0.value =="";
-									document.form.ipv6_fw_port_x_0.focus();
-									document.form.ipv6_fw_port_x_0.select();
-									return;
-							}
-						}else{
-							if(document.form.ipv6_fw_port_x_0.value == $('ipv6_fw_rulelist_table').rows[i].cells[1].innerHTML){
-									alert("<#JS_duplicate#>");
-									document.form.ipv6_fw_port_x_0.value =="";
-									document.form.ipv6_fw_port_x_0.focus();
-									document.form.ipv6_fw_port_x_0.select();
-									return;
-							}
-						}	
-				}	
-			}				
-*/
-		}
 		addRow(document.form.ipv6_fw_desc_x_0 ,1);
 		addRow(document.form.ipv6_fw_ripaddr_x_0, 0);
 		addRow(document.form.ipv6_fw_lipaddr_x_0, 0);
@@ -375,7 +344,7 @@ function showipv6_fw_rulelist(){
 				code +='<input class="remove_btn" onclick="del_Row(this);" value=""/></td></tr>';
 		}
 	}
-  code +='</table>';
+	code +='</table>';
 	$("ipv6_fw_rulelist_Block").innerHTML = code;	     
 }
 
@@ -514,7 +483,7 @@ function changeBgColor(obj, num){
 						<option value="TCP">TCP</option>
 						<option value="UDP">UDP</option>
 						<option value="BOTH">BOTH</option>
-						<!--option value="OTHER">OTHER</option -->
+						<option value="OTHER">OTHER</option>
 					</select>
 				</td>
 				<td width="12%">
