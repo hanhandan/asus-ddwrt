@@ -1,5 +1,5 @@
-Asuswrt-Merlin - build 3.0.0.4.374.33 (xx-xxx-2013)
-===================================================
+Asuswrt-Merlin - build 3.0.0.4.374.33-Beta1 (9-Sept-2013)
+=========================================================
 
 About
 -----
@@ -482,14 +482,18 @@ https://github.com/RMerl/asuswrt-merlin
 
 History
 -------
-3.9.0.4.374.33 (xx-xxx-2013):
+3.9.0.4.374.33 Beta 1 (9-Sept-2013):
    - NEW: Merged with Asus 374_119 code from RT-AC56U GPL (newer than 374_164 from N66U)
+   - NEW: Added support for last seen devices on Ethernet port status (Tools-> Sysinfo)
+          for RT-AC56U.
    - CHANGED: Enabled Syn Cookies for ARM devices (RT-AC56U)
    - CHANGED: Allow selecting the Download2 folder for media server
               location.
    - CHANGED: MIPS builds optimized for mips32r2 code generation.
               A quick iperf+openvpn benchmark showed a very measurable
               performance improvement. (N16/N66/AC66)
+   - CHANGED: Increased OpenVPN crt/key fields to allow up to 
+              3499 characters - enough to accomodate even a 4096-bit key.
    - FIXED: Samba binding to WAN interface would cause warnings
             about WINS/master browser (regression in 374)
    - FIXED: The ARM kernel was missing the Advanced IP Routing option,
@@ -504,6 +508,10 @@ History
            single quotes) which might break the webui JS.  There might 
            still be a few unprotected fields.
   - FIXED: Memory leak in httpd service (Asus bug)
+  - FIXED: Incorrect firewall rules were created with certain schedules
+           on Parental Control (patch provided by Makkie2002)
+  - FIXED: Potential key truncation in httpd if one was to use very 
+           large OpenVPN keys and certs in all fields of all four instances.
 
 
 3.0.0.4.374.32 (24-Aug-2013):
