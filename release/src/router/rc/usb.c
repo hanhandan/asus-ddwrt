@@ -428,17 +428,10 @@ void remove_usb_host_module(void)
 
 void remove_usb_module(void)
 {
-	int disabled = !nvram_get_int("usb_enable");
-
 	remove_usb_modem_modules();
 	remove_usb_prn_module();
-
 #if defined(RTCONFIG_SAMBASRV) || defined(RTCONFIG_FTP)
-	// only stop storage services if disabled
-	if (disabled || !nvram_get_int("usb_storage")) {
-		// Stop storage services
-		remove_usb_storage_module();
-	}
+	remove_usb_storage_module();
 #endif
 	remove_usb_led_module();
 	remove_usb_host_module();
@@ -2402,7 +2395,7 @@ void stop_webdav(void)
 #ifndef RTCONFIG_WEBDAV
 	system("sh /opt/etc/init.d/S50aicloud scan");
 #else	
-    if (pids("lighttpd-monitor")){
+	if (pids("lighttpd-monitor")){
 		kill_pidfile_tk("/tmp/lighttpd/lighttpd-monitor.pid");
 		unlink("/tmp/lighttpd/lighttpd-monitor.pid");
 	}
@@ -2425,6 +2418,24 @@ void stop_webdav(void)
 #endif
 }
 //#endif	// RTCONFIG_WEBDAV
+
+#ifdef RTCONFIG_WEBDAV
+void stop_all_webdav(void)
+{
+	if (getpid() != 1) {
+		notify_rc("stop_webdav");
+		return;
+	}
+
+	stop_webdav();
+
+	if (pids("lighttpd-arpping")){
+		kill_pidfile_tk("/tmp/lighttpd/lighttpd-arpping.pid");
+		unlink("/tmp/lighttpd/lighttpd-arpping.pid");
+	}
+	logmessage("WEBDAV Server", "arpping daemon is stoped");
+}
+#endif
 
 //#ifdef RTCONFIG_CLOUDSYNC
 void start_cloudsync(int fromUI)
@@ -2731,9 +2742,6 @@ void restart_sambaftp(int stop, int start)
 #else
 		system("sh /opt/etc/init.d/S50aicloud scan");
 #endif
-#ifdef RTCONFIG_NFS
-		start_nfsd();
-#endif
 	}
 	
 	if (start) {
@@ -2762,36 +2770,37 @@ void restart_sambaftp(int stop, int start)
 #define USB_PORT_1      0x02
 #define USB_PORT_2      0x04
 
-int ejusb_main(int argc, char *argv[])
+static void ejusb_usage(void)
+{
+	printf(	"Usage: ejusb [-1|1|2] [0|1*]\n"
+		"First parameter means disk_port.\n"
+		"\t-1: All ports\n"
+		"\t 1: disk port 1\n"
+		"\t 2: disk port 2\n"
+//		"\t 3: disk port 3\n"
+		"Second parameter means whether ejusb restart NAS applications or not.\n"
+		"\tDefault value is 1.\n");
+}
+
+/* @return:
+ * 	 0:	success
+ * 	-1:	invalid parameter
+ * 	-2:	read disk data fail
+ * 	-3:	device not found
+ */
+int __ejusb_main(int got_usb_port)
 {
 	disk_info_t *disk_list, *disk_info;
 	partition_info_t *partition_info;
 	char nvram_name[32], device_name[8], devpath[16];
-	int got_usb_port;
-	int restart_nasapps = 1;
 
-	if(argc != 2 && argc != 3){
-#ifndef RTCONFIG_BCMARM
-		printf("Usage: ejusb [disk_port] [0|1]\n");
-#else
-		printf("Usage: ejusb [disk_port] [1|2]\n");
-#endif
-		return 0;
-	}
-
-	if (argc == 3)
-		restart_nasapps = atoi(argv[2]);
-
-	got_usb_port = atoi(argv[1]);
-	if(got_usb_port < 1 || got_usb_port > 3){
-		printf("Usage: ejusb [disk_port] [0|1]\n");
-		return 0;
-	}
+	if (got_usb_port < 1 || got_usb_port > 3)
+		return -1;
 
 	disk_list = read_disk_data();
 	if(disk_list == NULL){
 		printf("Can't get any disk's information.\n");
-		return 0;
+		return -2;
 	}
 
 	memset(nvram_name, 0, 32);
@@ -2802,10 +2811,11 @@ int ejusb_main(int argc, char *argv[])
 	for(disk_info = disk_list; disk_info != NULL; disk_info = disk_info->next)
 		if(!strcmp(disk_info->device, device_name))
 			break;
+
 	if(disk_info == NULL){
 		printf("Can't find the information of the device: %s\n", device_name);
 		free_disk_data(&disk_list);
-		return 0;
+		return -3;
 	}
 
 	memset(nvram_name, 0, 32);
@@ -2821,6 +2831,33 @@ int ejusb_main(int argc, char *argv[])
 		}
 	}
 	free_disk_data(&disk_list);
+
+	return 0;
+}
+
+int ejusb_main(int argc, char *argv[])
+{
+	int i, ports, restart_nasapps = 1;
+
+	if(argc != 2 && argc != 3){
+		ejusb_usage();
+		return -1;
+	}
+
+	ports = atoi(argv[1]);
+	if(ports != -1 && (ports < 1 || ports > 3)) {
+		ejusb_usage();
+		return -1;
+	}
+	if (argc == 3)
+		restart_nasapps = atoi(argv[2]);
+
+	for (i = 1; i < 4; ++i) {
+		if (ports != -1 && i != ports)
+			continue;
+
+		__ejusb_main(i);
+	}
 
 	if (restart_nasapps) {
 		_dprintf("restart_nas_services(%d): test 7.\n", getpid());
@@ -3443,22 +3480,22 @@ int stop_sd_idle(void) {
 #endif
 
 #ifdef RTCONFIG_NFS
-int start_nfsd(void)
+void start_nfsd(void)
 {
 	struct stat	st_buf;
 	FILE 		*fp;
         char *nv, *nvp, *b, *c;
 	char *dir, *access, *options;
 
-	if (nvram_match("nfsd_enable", "0")) return 0;
+	if (nvram_match("nfsd_enable", "0")) return;
 
 	/* create directories/files */
 	mkdir("/var/lib", 0755);
 	mkdir("/var/lib/nfs", 0755);
-# ifdef LINUX26
+#ifdef LINUX26
 	mkdir("/var/lib/nfs/v4recovery", 0755);
 	mount("nfsd", "/proc/fs/nfsd", "nfsd", MS_MGC_VAL, NULL);
-# endif
+#endif
 	close(creat("/var/lib/nfs/etab", 0644));
 	close(creat("/var/lib/nfs/xtab", 0644));
 	close(creat("/var/lib/nfs/rmtab", 0644));
@@ -3470,7 +3507,7 @@ int start_nfsd(void)
 
 	if ((fp = fopen(NFS_EXPORT, "w")) == NULL) {
 		perror(NFS_EXPORT);
-		return 1;
+		return;
 	}
 
 	nv = nvp = strdup(nvram_safe_get("nfsd_exportlist"));
@@ -3506,18 +3543,18 @@ int start_nfsd(void)
 	sleep(1);
 	eval("/usr/sbin/exportfs", "-a");
 
-	return 0;
+	return;
 }
 
-int restart_nfsd(void)
+void restart_nfsd(void)
 {
 	eval("/usr/sbin/exportfs", "-au");
 	eval("/usr/sbin/exportfs", "-a");
 
-	return 0;
+	return;
 }
 
-int stop_nfsd(void)
+void stop_nfsd(void)
 {
 	killall_tk("mountd");
 	killall("nfsd", SIGKILL);
@@ -3528,7 +3565,7 @@ int stop_nfsd(void)
 	umount("/proc/fs/nfsd");
 #endif
 
-	return 0;
+	return;
 }
 
 #endif
