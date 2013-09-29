@@ -47,11 +47,14 @@ static int sig_cur = -1;
 
 static void ntp_service()
 {
+	// Don't set it only on first sync, someone else might have reset it
+	if (!nvram_get_int("svc_ready"))
+		nvram_set("svc_ready", "1");
+
 	if (first_sync)
 	{
 		first_sync = 0;
 		nvram_set("reload_svc_radio", "1");
-		nvram_set("svc_ready", "1");
 
 		setup_timezone();
 
