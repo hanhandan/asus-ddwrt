@@ -599,6 +599,10 @@ define RouterOptions
 		sed -i "/RTCONFIG_EMAIL/d" $(1); \
 		echo "RTCONFIG_EMAIL=y" >>$(1); \
 	fi; \
+	if [ "$(USER_LOW_RSSI)" = "y" ]; then \
+		sed -i "/RTCONFIG_USER_LOW_RSSI/d" $(1); \
+		echo "RTCONFIG_USER_LOW_RSSI=y" >>$(1); \
+	fi; \
 	if [ "$(USB)" = "USB" ]; then \
 		sed -i "/RTCONFIG_USB is not set/d" $(1); \
 		echo "RTCONFIG_USB=y" >>$(1); \
@@ -854,6 +858,10 @@ define RouterOptions
 	else \
 		sed -i "/RTCONFIG_WPSMULTIBAND/d" $(1); \
 		echo "# RTCONFIG_WPSMULTIBAND is not set" >>$(1); \
+	fi; \
+	if [ "$(IPSEC)" = "y" ]; then \
+		sed -i "/RTCONFIG_IPSEC/d" $(1); \
+		echo "RTCONFIG_IPSEC=y" >>$(1); \
 	fi; \
 	)
 	$(call platformRouterOptions, $(1))
@@ -1309,6 +1317,43 @@ define KernelConfig
 			echo "CONFIG_IP_ROUTE_MULTIPATH=y" >>$(1); \
 			echo "# CONFIG_IP_ROUTE_VERBOSE is not set" >>$(1); \
 			echo "CONFIG_IP_MROUTE_MULTIPLE_TABLES=y" >>$(1); \
+		fi; \
+	fi; \
+	if [ "$(IPSEC)" = "y" ]; then \
+		sed -i "/CONFIG_XFRM_USER/d" $(1); \
+		echo "CONFIG_XFRM_USER=m" >>$(1); \
+		echo "# CONFIG_XFRM_SUB_POLICY is not set" >>$(1); \
+		echo "# CONFIG_XFRM_MIGRATE is not set" >>$(1); \
+		sed -i "/CONFIG_NET_KEY/d" $(1); \
+		echo "CONFIG_NET_KEY=m" >>$(1); \
+		echo "# CONFIG_NET_KEY_MIGRATE is not set" >>$(1); \
+		sed -i "/CONFIG_INET_AH/d" $(1); \
+		echo "CONFIG_INET_AH=m" >>$(1); \
+		sed -i "/CONFIG_INET_ESP/d" $(1); \
+		echo "CONFIG_INET_ESP=m" >>$(1); \
+		sed -i "/CONFIG_INET_IPCOMP/d" $(1); \
+		echo "CONFIG_INET_IPCOMP=m" >>$(1); \
+		sed -i "/CONFIG_INET_XFRM_MODE_TRANSPORT/d" $(1); \
+		echo "CONFIG_INET_XFRM_MODE_TRANSPORT=m" >>$(1); \
+		sed -i "/CONFIG_INET_XFRM_MODE_TUNNEL/d" $(1); \
+		echo "CONFIG_INET_XFRM_MODE_TUNNEL=m" >>$(1); \
+		sed -i "/CONFIG_INET_XFRM_MODE_BEET/d" $(1); \
+		echo "CONFIG_INET_XFRM_MODE_BEET=m" >>$(1); \
+		sed -i "/CONFIG_NETFILTER_XT_MATCH_POLICY/d" $(1); \
+		echo "CONFIG_NETFILTER_XT_MATCH_POLICY=m" >>$(1); \
+		if [ "$(IPV6SUPP)" = "y" ]; then \
+			sed -i "/CONFIG_INET6_AH/d" $(1); \
+			echo "CONFIG_INET6_AH=m" >>$(1); \
+			sed -i "/CONFIG_INET6_ESP/d" $(1); \
+			echo "CONFIG_INET6_ESP=m" >>$(1); \
+			sed -i "/CONFIG_INET6_IPCOMP/d" $(1); \
+			echo "CONFIG_INET6_IPCOMP=m" >>$(1); \
+			sed -i "/CONFIG_INET6_XFRM_MODE_TRANSPORT/d" $(1); \
+			echo "CONFIG_INET6_XFRM_MODE_TRANSPORT=m" >>$(1); \
+			sed -i "/CONFIG_INET6_XFRM_MODE_TUNNEL/d" $(1); \
+			echo "CONFIG_INET6_XFRM_MODE_TUNNEL=m" >>$(1); \
+			sed -i "/CONFIG_INET6_XFRM_MODE_BEET/d" $(1); \
+			echo "CONFIG_INET6_XFRM_MODE_BEET=m" >>$(1); \
 		fi; \
 	fi; \
 	)

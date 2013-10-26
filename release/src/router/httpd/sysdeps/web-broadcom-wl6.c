@@ -1200,6 +1200,14 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 	scb_val_t rssi;
 
 	snprintf(prefix, sizeof(prefix), "wl%d_", unit);
+#ifdef RTCONFIG_PROXYSTA
+	if (is_psta(1 - unit))
+	{
+		ret += websWrite(wp, "%s radio is disabled\n",
+			nvram_match(strcat_r(prefix, "nband", tmp), "1") ? "5 GHz" : "2.4 GHz");
+		return ret;
+	}
+#endif
 #ifdef RTCONFIG_WIRELESSREPEATER
 	if ((nvram_get_int("sw_mode") == SW_MODE_REPEATER)
 		&& (nvram_get_int("wlc_band") == unit))
@@ -1216,7 +1224,7 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 	if (nvram_match(strcat_r(prefix, "mode", tmp), "wds")) {
 		// dump static info only for wds mode:
 		// ret += websWrite(wp, "SSID: %s\n", nvram_safe_get(strcat_r(prefix, "ssid", tmp)));
-		ret += websWrite(wp, "Channel: %s\n", nvram_safe_get(strcat_r(prefix, "channel", tmp)));
+		ret += websWrite(wp, "Channel: %d\n", wl_control_channel(unit));
 	}
 	else {
 		ret += wl_status(eid, wp, argc, argv, unit);
@@ -1599,24 +1607,10 @@ wl_extent_channel(int unit)
 int
 ej_wl_extent_channel(int eid, webs_t wp, int argc, char_t **argv)
 {
-	int ret = 0;
-	int channel_24 = 0, channel_50 = 0;
-
-	if (!(channel_24 = wl_extent_channel(0)))
-	{
-		ret = websWrite(wp, "[\"0\"]");
-		return ret;
-	}
-
-	if (!(channel_50 = wl_extent_channel(1)))
-		ret = websWrite(wp, "[\"%d\", \"%d\"]", channel_24, 0);
-	else
-		ret = websWrite(wp, "[\"%d\", \"%d\"]", channel_24, channel_50);
-
-	return ret;
+	return websWrite(wp, "[\"%d\", \"%d\"]", wl_extent_channel(0), wl_extent_channel(1));
 }
 
-static int
+int
 wl_control_channel(int unit)
 {
 	int ret;
@@ -1661,21 +1655,7 @@ wl_control_channel(int unit)
 int
 ej_wl_control_channel(int eid, webs_t wp, int argc, char_t **argv)
 {
-	int ret = 0;
-	int channel_24 = 0, channel_50 = 0;
-
-	if (!(channel_24 = wl_control_channel(0)))
-	{
-		ret = websWrite(wp, "[\"0\"]");
-		return ret;
-	}
-
-	if (!(channel_50 = wl_control_channel(1)))
-		ret = websWrite(wp, "[\"%d\", \"%d\"]", channel_24, 0);
-	else
-		ret = websWrite(wp, "[\"%d\", \"%d\"]", channel_24, channel_50);
-
-	return ret;
+        return websWrite(wp, "[\"%d\", \"%d\"]", wl_control_channel(0), wl_control_channel(1));
 }
 
 #define	IW_MAX_FREQUENCIES	32

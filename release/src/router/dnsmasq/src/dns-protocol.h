@@ -1,4 +1,4 @@
-/* dnsmasq is Copyright (c) 2000-2012 Simon Kelley
+/* dnsmasq is Copyright (c) 2000-2013 Simon Kelley
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -52,8 +52,13 @@
 #define T_OPT		41
 #define	T_TKEY		249		
 #define	T_TSIG		250
+#define T_AXFR          252
 #define T_MAILB		253	
 #define T_ANY		255
+
+#define EDNS0_OPTION_MAC            65001 /* dyndns.org temporary assignment */
+#define EDNS0_OPTION_CLIENT_SUBNET  8     /* IANA */
+
 
 struct dns_header {
   u16 id;

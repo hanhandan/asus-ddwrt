@@ -1,4 +1,4 @@
-/* dnsmasq is Copyright (c) 2000-2012 Simon Kelley
+/* dnsmasq is Copyright (c) 2000-2013 Simon Kelley
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -31,6 +31,13 @@ struct ra_packet {
   u16 lifetime;
   u32 reachable_time;
   u32 retrans_time;
+};
+
+struct neigh_packet {
+  u8 type, code;
+  u16 checksum;
+  u16 reserved;
+  struct in6_addr target;
 };
 
 struct prefix_opt {
