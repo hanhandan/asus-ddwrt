@@ -316,7 +316,6 @@ void start_usb(void)
 		if (nvram_get_int("usb_uhci") == 1) {
 			modprobe(USBUHCI_MOD);
 		}
-
 		if (nvram_get_int("usb_ohci") == 1) {
 			modprobe(USBOHCI_MOD);
 		}
@@ -481,6 +480,10 @@ void stop_usb(void)
 {
 	int disabled = !nvram_get_int("usb_enable");
 
+	/* fix upgrade fail issue : remove wl_high before rmmod ehci_hcd */
+	if (get_model() == MODEL_RTAC53U) 
+		modprobe_r("wl_high");
+
 	stop_usb_program(0);
 
 	remove_usb_modem_modules();
@@ -583,8 +586,10 @@ int mount_r(char *mnt_dev, char *mnt_dir, char *type)
 		else if (strcmp(type, "vfat") == 0) {
 #ifdef RTCONFIG_BCMARM
 			flags |= MS_NOATIME;
-#endif
+			sprintf(options, "umask=0000,allow_utime=0022");
+#else
 			sprintf(options, "umask=0000,allow_utime=0000");
+#endif
 
 			if (nvram_invmatch("smbd_cset", ""))
 				sprintf(options + strlen(options), ",iocharset=%s%s", 
@@ -670,6 +675,19 @@ int mount_r(char *mnt_dev, char *mnt_dir, char *type)
 					else
 						ret = eval("mount", "-t", "ufsd", "-o", options, "-o", "force", mnt_dev, mnt_dir);
 #endif
+				}
+			}
+#endif
+
+#ifdef RTCONFIG_HFS
+			/* try HFS in case it's installed */
+			if(ret != 0 && !strncmp(type, "hfs", 3)){
+				if(nvram_invmatch("usb_hfs_opt", ""))
+					sprintf(options + strlen(options), "%s%s", options[0] ? "," : "", nvram_safe_get("usb_hfs_opt"));
+				sprintf(options + strlen(options), ",noatime,nodev,sync" + (options[0] ? 0 : 1));
+
+				if (nvram_get_int("usb_fs_hfs")) {
+					ret = eval("mount", "-t", "ufsd", "-o", options, "-o", "force", mnt_dev, mnt_dir);
 				}
 			}
 #endif
@@ -1140,7 +1158,7 @@ done:
 						|| !strcmp(type, "ext4")
 #endif
 						|| !strcmp(type, "vfat") || !strcmp(type, "msdos")
-						|| !strcmp(type, "ntfs") || !strcmp(type, "ufsd"))
+						|| !strcmp(type, "ntfs") || !strncmp(type, "hfs", 3))
 						){
 					findmntents(dev_name, 0, umount_mountpoint, EFH_HP_REMOVE);
 					memset(command, 0, PATH_MAX);
@@ -1560,7 +1578,7 @@ void hotplug_usb(void)
 				if (mount_partition(devname, host, NULL, device, EFH_HP_ADD)) {
 //_dprintf("restart_nas_services(%d): test 5.\n", getpid());
 					//restart_nas_services(1, 1); // restart all NAS applications
-					notify_rc_after_wait("restart_nasapps");
+					notify_rc_and_wait("restart_nasapps");
 				}
 				TRACE_PT(" end of mount\n");
 			}
@@ -1813,9 +1831,11 @@ int suit_double_quote(const char *output, const char *input, int outsize){
 	return dst-output;
 }
 
+#if 0
 #ifdef RTCONFIG_BCMARM
 extern void del_samba_rules(void);
 extern void add_samba_rules(void);
+#endif
 #endif
 
 void
@@ -1844,9 +1864,12 @@ start_samba(void)
 	enable_gro(2);
 #endif
 
+#if 0
 #ifdef RTCONFIG_BCMARM
 	add_samba_rules();
 #endif
+#endif
+
 	mkdir_if_none("/var/run/samba");
 	mkdir_if_none("/etc/samba");
 	
@@ -1926,8 +1949,10 @@ void stop_samba(void)
 
 	logmessage("Samba Server", "smb daemon is stoped");
 
+#if 0
 #ifdef RTCONFIG_BCMARM
         del_samba_rules();
+#endif
 #endif
 
 #ifdef RTCONFIG_GROCTRL
@@ -2679,6 +2704,9 @@ if (nvram_match("asus_mfg", "0")) {
 	//start_webdav();
 #endif
 }
+#ifdef RTCONFIG_TIMEMACHINE
+	start_timemachine();
+#endif
 }
 
 void stop_nas_services(int force)
@@ -2705,6 +2733,9 @@ void stop_nas_services(int force)
 
 #ifdef RTCONFIG_WEBDAV
 	//stop_webdav();
+#endif
+#ifdef RTCONFIG_TIMEMACHINE
+	stop_timemachine();
 #endif
 }
 
@@ -3279,10 +3310,12 @@ _dprintf("diskremove: pool_act=%s.\n", pool_act);
 _dprintf("diskremove: host=%d, channel=%d, id=%d, lun=%d.\n", host, channel, id, lun);
 				remove_scsi_device(host, channel, id, lun);
 			}
+#if defined(RTCONFIG_APP_PREINSTALLED) || defined(RTCONFIG_APP_NETINSTALLED)
 			else{
 _dprintf("diskremove: stop_app.\n");
 				stop_app();
 			}
+#endif
 
 			break;
 		}

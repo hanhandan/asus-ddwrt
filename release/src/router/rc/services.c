@@ -417,6 +417,13 @@ void create_passwd(void)
 	
 	create_custom_passwd();
 #endif
+#ifdef RTCONFIG_OPENVPN
+	mkdir_if_none("/etc/pam.d");
+	f_write_string("/etc/pam.d/openvpn",
+		"auth required pam_unix.so\n",
+		0, 0644);
+	create_openvpn_passwd();
+#endif
 
 	strcpy(salt, "$1$");
 	f_read("/dev/urandom", s, 6);
@@ -444,9 +451,15 @@ void create_passwd(void)
 #ifdef RTCONFIG_SAMBASRV	//!!TB
 		fprintf(f, "%s:*:0:0:99999:7:0:0:\n", smbd_user);
 #endif
+#ifdef RTCONFIG_OPENVPN
+		fappend(f, "/etc/shadow.openvpn");
+#endif
 
 		fappend(f, "/etc/shadow.custom");
 		append_custom_config("shadow", f);
+#ifdef RTCONFIG_OPENVPN
+		fappend(f, "/etc/shadow.openvpn");
+#endif
 		fclose(f);
 	}
 	umask(m);
@@ -469,8 +482,9 @@ void create_passwd(void)
 #endif	//!!TB
 	f_write_string("/etc/passwd", s, 0, 0644);
 	fappend_file("/etc/passwd", "/etc/passwd.custom");
-
-//	append_custom_config() - saves us from opening the file first
+#ifdef RTCONFIG_OPENVPN
+	fappend_file("/etc/passwd", "/etc/passwd.openvpn");
+#endif
 	fappend_file("/etc/passwd", "/jffs/configs/passwd.add");
 
 	sprintf(s,
@@ -493,8 +507,10 @@ void create_passwd(void)
 		"nobody:x:65534:\n",
 		0, 0644);
 	fappend_file("/etc/group", "/etc/group.custom");
-//      append_custom_config();
-        fappend_file("/etc/group", "/jffs/configs/group.add");
+#ifdef RTCONFIG_OPENVPN
+	fappend_file("/etc/group", "/etc/group.openvpn");
+#endif
+	fappend_file("/etc/group", "/jffs/configs/group.add");
 }
 
 void start_dnsmasq(int force)
@@ -588,6 +604,12 @@ void start_dnsmasq(int force)
 		dmresolv,
 		lan_ifname,
 		nvram_get_int("dns_minport") ? : 4096);
+
+#ifdef  __CONFIG_NORTON__
+	/* TODO: dnsmasq doesn't support a single hostname across multiple interfaces */
+	if (atoi(nvram_safe_get("nga_enable")))
+		fprintf(fp, "interface-name=norton.local,%s ", nvram_safe_get("lan_ifname"));
+#endif /* __CONFIG_NORTON__ */
 
 #ifdef RTCONFIG_YANDEXDNS
 	/* default Yandex.DNS server for clients */
@@ -1028,28 +1050,6 @@ void start_dhcp6s(void)
 	_eval(dhcp6s_argv, NULL, 0, &pid);
 }
 
-int
-start_ipv6aide()
-{
-	char *ipv6aide_argv[] = {"ipv6aide", NULL};
-	pid_t pid;
-
-	if ((get_ipv6_service() == IPV6_NATIVE_DHCP) &&
-		nvram_match("ipv6_ifdev", "eth"))
-		return _eval(ipv6aide_argv, NULL, 0, &pid);
-
-	return 0;
-}
-
-int
-stop_ipv6aide()
-{
-	if (pids("ipv6aide"))
-		killall("ipv6aide", SIGTERM);
-
-	return 0;
-}
-
 static pid_t pid_radvd = -1;
 
 void start_radvd(void)
@@ -1071,9 +1071,6 @@ void start_radvd(void)
 
 	stop_dhcp6s();
 	start_dhcp6s();
-
-	stop_ipv6aide();
-	start_ipv6aide();
 
 	if (ipv6_enabled() && nvram_get_int("ipv6_radvd")) {
 		service = get_ipv6_service();
@@ -1174,9 +1171,9 @@ void start_radvd(void)
 		use_custom_config("radvd.conf", "/etc/radvd.conf");
 
 		chmod("/etc/radvd.conf", 0400);
-
+#if 0
 		f_write_string("/proc/sys/net/ipv6/conf/all/forwarding", "1", 0, 0);
-
+#endif
 		// Start radvd
 		argc = 1;
 		argv[argc++] = "-u";
@@ -1204,12 +1201,12 @@ void stop_radvd(void)
 	}
 
 	stop_dhcp6s();
-	stop_ipv6aide();
 
 	pid_radvd = -1;
 	killall_tk("radvd");
-
+#if 0
 	f_write_string("/proc/sys/net/ipv6/conf/all/forwarding", "0", 0, 0);
+#endif
 }
 
 void stop_dhcp6s(void)
@@ -1240,7 +1237,6 @@ void start_ipv6(void)
 	case IPV6_NATIVE_DHCP:
 		if (get_ipv6_service() == IPV6_NATIVE_DHCP)
 		{
-			nvram_set("ipv6_ll_remote", "");
 			nvram_set("ipv6_prefix", "");
 			if (nvram_get_int("ipv6_dhcp_pd"))
 				nvram_set("ipv6_rtr_addr", "");
@@ -2225,6 +2221,8 @@ start_ddns(void)
 		service = "heipv6tb";
 	else if (strcmp(server, "WWW.NO-IP.COM")==0)
 		service = "noip";
+	else if (strcmp(server, "WWW.NAMECHEAP.COM")==0)
+		service = "namecheap";
 	else if (strcmp(server, "WWW.ASUS.COM")==0) {
 		service = "dyndns", asus_ddns = 1;
 	} else {
@@ -2357,7 +2355,7 @@ stop_syslogd(void)
 	if (pids("syslogd"))
 	{
 		killall("syslogd", SIGTERM);
-#if defined(RTCONFIG_JFFS2LOG) && defined(RTCONFIG_JFFS2)
+#if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
 	        eval("cp", "/tmp/syslog.log", "/tmp/syslog.log-1", "/jffs");
 #endif
 	}
@@ -2412,7 +2410,8 @@ start_syslogd(void)
 		syslogd_argv[argc++] = "-L";
 	}
 
-#if defined(RTCONFIG_JFFS2LOG) && defined(RTCONFIG_JFFS2)
+//#if defined(RTCONFIG_JFFS2LOG) && defined(RTCONFIG_JFFS2)
+#if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
         eval("cp", "/jffs/syslog.log", "/jffs/syslog.log-1", "/tmp");
 #endif
 
@@ -2955,10 +2954,135 @@ int stop_lltd(void)
 	return ret;
 }
 
+#ifdef RTCONFIG_MDNS
+
+#define AVAHI_CONFIG_PATH	"/tmp/avahi"
+#define AVAHI_SERVICES_PATH	"/tmp/avahi/services"
+#define AVAHI_CONFIG_FN		"avahi-daemon.conf"
+#define AVAHI_AFPD_SERVICE_FN	"afpd.service"
+#define AVAHI_ADISK_SERVICE_FN	"adisk.service"
+#define TIMEMACHINE_BACKUP_NAME	"Backups.backupdb"
+
+int generate_mdns_config()
+{
+	FILE *fp;
+	char avahi_config[80];
+	char et0macaddr[18];
+	int ret = 0;
+
+	sprintf(avahi_config, "%s/%s", AVAHI_CONFIG_PATH, AVAHI_CONFIG_FN);
+
+	strcpy(et0macaddr, nvram_safe_get("et0macaddr"));
+
+	/* Generate avahi configuration file */
+	if (!(fp = fopen(avahi_config, "w"))) {
+		perror(avahi_config);
+		return -1;
+	}
+
+	/* Set [server] configuration */
+	fprintf(fp, "[Server]\n");
+	fprintf(fp, "host-name=%s-%c%c%c%c\n", nvram_safe_get("model"),et0macaddr[12],et0macaddr[13],et0macaddr[15],et0macaddr[16]);
+	fprintf(fp, "use-ipv4=yes\n");
+	fprintf(fp, "use-ipv6=no\n");
+	fprintf(fp, "deny-interfaces=eth0\n");
+	fprintf(fp, "ratelimit-interval-usec=1000000\n");
+	fprintf(fp, "ratelimit-burst=1000\n");
+
+	/* Set [wide-area] configuration */
+	fprintf(fp, "\n[wide-area]\n");
+	fprintf(fp, "enable-wide-area=yes\n");
+
+	/* Set [rlimits] configuration */
+	fprintf(fp, "\n[rlimits]\n");
+	fprintf(fp, "rlimit-core=0\n");
+	fprintf(fp, "rlimit-data=4194304\n");
+	fprintf(fp, "rlimit-fsize=0\n");
+	fprintf(fp, "rlimit-nofile=768\n");
+	fprintf(fp, "rlimit-stack=4194304\n");
+	fprintf(fp, "rlimit-nproc=3\n");
+
+	fclose(fp);
+
+	return ret;
+}
+
+int start_mdns()
+{
+	int ret = 0;
+
+	mkdir_if_none(AVAHI_CONFIG_PATH);
+	//mkdir_if_none(AVAHI_SERVICES_PATH);
+	//if (d_exists(AVAHI_SERVICES_PATH) {
+	//	_dprintf("%s exist, remove it\n", AVAHI_SERVICES_PATH);
+	//	if (rmdir(AVAHI_SERVICES_PATH)) {
+	//		_dprintf("rmdir %s (%s)\n", AVAHI_SERVICES_PATH, strerror(errno));
+	//		return -11;
+	//	}
+	//}
+	
+	rmdir(AVAHI_SERVICES_PATH);
+	if(check_if_dir_exist(AVAHI_SERVICES_PATH))
+		system("rm -rf /tmp/avahi/services");
+	sleep(1);
+	generate_mdns_config();
+	//generate_afpd_service_config();
+	//generate_adisk_service_config();
+
+	// Execute avahi_daemon daemon
+	//ret = eval("avahi-daemon");
+	system("avahi-daemon &");
+
+	_dprintf("start_mdns: ret= %d\n", ret);
+
+	return ret;
+}
+
+void stop_mdns()
+{
+	if (pids("afpd"))
+	{
+		return;
+	}
+	if (getpid() != 1) {
+		notify_rc("stop_mdns");
+	}
+
+	//killall_tk("avahi-daemon");
+	system("killall -SIGKILL avahi-daemon");
+	return;
+}
+
+#endif
+
+#ifdef  __CONFIG_NORTON__
+
+int start_norton(void)
+{
+	eval("/opt/nga/init/bootstrap.sh", "start", "rc");
+
+	return 0;
+}
+
+int stop_norton(void)
+{
+	int ret;
+
+	ret = eval("/opt/nga/init/bootstrap.sh", "stop", "rc");
+
+	return ret;
+}
+
+#endif /* __CONFIG_NORTON__ */
+
 int
 start_services(void)
 {
 	_dprintf("%s %d\n", __FUNCTION__, __LINE__);	// tmp test
+
+#ifdef  __CONFIG_NORTON__
+	start_norton();
+#endif /* __CONFIG_NORTON__ */
 
 	start_telnetd();
 #ifdef RTCONFIG_SSH
@@ -2974,6 +3098,9 @@ start_services(void)
 #elif defined RTCONFIG_RALINK
 	start_8021x();
 #endif
+#ifdef RTCONFIG_BCMARM
+	start_wlaide();
+#endif
 	start_wps();
 	start_wpsaide();
 #ifdef RTCONFIG_DNSMASQ
@@ -2984,7 +3111,9 @@ start_services(void)
 	start_dhcpd();
 	start_dns();
 #endif
-
+#ifdef RTCONFIG_MDNS
+	start_mdns();
+#endif
 	/* Link-up LAN ports after DHCP server ready. */
 	start_lan_port(0);
 
@@ -3040,6 +3169,10 @@ start_services(void)
 #else
 	system("sh /opt/etc/init.d/S50aicloud scan");
 #endif
+
+#ifdef RTCONFIG_WIRELESSREPEATER
+	apcli_start(); 
+#endif	
 
 #ifdef RTCONFIG_SAMBASRV
 	start_samba();	// We might need it for wins/browsing services
@@ -3107,8 +3240,14 @@ stop_services(void)
 	stop_dns();
 	stop_dhcpd();
 #endif
+#ifdef RTCONFIG_MDNS
+	stop_mdns();
+#endif
 #ifdef RTCONFIG_IPV6
 	stop_radvd();
+#endif
+#ifdef RTCONFIG_BCMARM
+	stop_wlaide();
 #endif
 	stop_wpsaide();
 	stop_wps();
@@ -3125,6 +3264,10 @@ stop_services(void)
 	stop_sshd();
 #endif
 	stop_telnetd();
+
+#ifdef  __CONFIG_NORTON__
+	stop_norton();
+#endif /* __CONFIG_NORTON__ */
 }
 
 // 2008.10 magic 
@@ -3404,7 +3547,8 @@ again:
 		stop_usb();
 		stop_usbled();
 #endif
-#if defined(RTCONFIG_JFFS2LOG) && defined(RTCONFIG_JFFS2)
+//#if defined(RTCONFIG_JFFS2LOG) && defined(RTCONFIG_JFFS2)
+#if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
                 eval("cp", "/tmp/syslog.log", "/tmp/syslog.log-1", "/jffs");
 #endif
 		if(strcmp(script,"rebootandrestore")==0) {
@@ -3565,6 +3709,9 @@ again:
 		stop_dns();
 		stop_dhcpd();
 #endif
+#ifdef RTCONFIG_MDNS
+		stop_mdns();
+#endif
 		stop_ots();
 		stop_networkmap();
 #ifdef RTCONFIG_USB
@@ -3582,6 +3729,9 @@ again:
 #else
 			stop_dns();
 			stop_dhcpd();
+#endif
+#ifdef RTCONFIG_MDNS
+			stop_mdns();
 #endif
 			stop_wps();
 #ifdef CONFIG_BCMWL5
@@ -3609,6 +3759,9 @@ again:
 #else
 			start_dns();
 			start_dhcpd();
+#endif
+#ifdef RTCONFIG_MDNS
+			start_mdns();
 #endif
 			start_wan();
 #ifdef CONFIG_BCMWL5
@@ -3643,6 +3796,9 @@ again:
 			stop_dns();
 			stop_dhcpd();
 #endif
+#ifdef RTCONFIG_MDNS
+			stop_mdns();
+#endif
 			stop_wps();
 #ifdef CONFIG_BCMWL5
 			stop_nas();
@@ -3667,6 +3823,9 @@ again:
 #else
 			start_dns();
 			start_dhcpd();
+#endif
+#ifdef RTCONFIG_MDNS
+			start_mdns();
 #endif
 			start_wan();
 #ifdef CONFIG_BCMWL5
@@ -3716,6 +3875,9 @@ again:
 			stop_dns();
 			stop_dhcpd();
 #endif
+#ifdef RTCONFIG_MDNS
+			stop_mdns();
+#endif
 			stop_wps();
 #ifdef CONFIG_BCMWL5
 			stop_nas();
@@ -3745,6 +3907,9 @@ again:
 #else
 			start_dns();
 			start_dhcpd();
+#endif
+#ifdef RTCONFIG_MDNS
+			start_mdns();
 #endif
 			start_wan();
 #ifdef CONFIG_BCMWL5
@@ -3957,18 +4122,6 @@ check_ddr_done:
 			restart_nas_services(0, 1);
 		}
 	}
-#ifdef RTCONFIG_OPENVPN
-        else if (strncmp(script, "vpnclient", 9) == 0) {
-                if (action & RC_SERVICE_STOP) stop_vpnclient(atoi(&script[9]));
-                if (action & RC_SERVICE_START) start_vpnclient(atoi(&script[9]));
-        }
-
-        else if (strncmp(script, "vpnserver" ,9) == 0) {
-                if (action & RC_SERVICE_STOP) stop_vpnserver(atoi(&script[9]));
-                if (action & RC_SERVICE_START) start_vpnserver(atoi(&script[9]));
-        }
-#endif
-
 #if defined(RTCONFIG_SAMBASRV) && defined(RTCONFIG_FTP)
 	else if (strcmp(script, "ftpsamba") == 0)
 	{
@@ -4372,7 +4525,7 @@ check_ddr_done:
 		if(action&RC_SERVICE_STOP) stop_autodet();
 		if(action&RC_SERVICE_START) start_autodet();
 	}
-#ifdef CONFIG_BCMWL5
+#if defined(CONFIG_BCMWL5)|| defined(MTK_APCLI)
 	else if (strcmp(script, "wlcscan")==0)
 	{
 		if(action&RC_SERVICE_STOP) stop_wlcscan();
@@ -4470,6 +4623,43 @@ check_ddr_done:
 		}
 	}
 #endif
+#ifdef RTCONFIG_OPENVPN
+	else if (strncmp(script, "vpnclient", 9) == 0) {
+		if (action & RC_SERVICE_STOP) stop_vpnclient(atoi(&script[9]));
+		if (action & RC_SERVICE_START) start_vpnclient(atoi(&script[9]));
+	}
+	else if (strncmp(script, "vpnserver" ,9) == 0) {
+		if (action & RC_SERVICE_STOP) stop_vpnserver(atoi(&script[9]));
+		if (action & RC_SERVICE_START) start_vpnserver(atoi(&script[9]));
+	}
+#endif
+#if defined(RTCONFIG_PPTPD) || defined(RTCONFIG_ACCEL_PPTPD) || defined(RTCONFIG_OPENVPN)
+        else if (strcmp(script, "vpnd") == 0)
+        {	
+#if defined(RTCONFIG_OPENVPN)
+		int openvpn_unit = nvram_get_int("vpn_server_unit");
+#endif
+		if (action & RC_SERVICE_STOP){
+#if defined(RTCONFIG_PPTPD) || defined(RTCONFIG_ACCEL_PPTPD)
+			stop_pptpd();
+#endif
+#if defined(RTCONFIG_OPENVPN)
+			stop_vpnserver(openvpn_unit);
+#endif
+		}
+		if (action & RC_SERVICE_START){
+#if defined(RTCONFIG_PPTPD) || defined(RTCONFIG_ACCEL_PPTPD)
+			start_pptpd();
+#endif
+			start_firewall(wan_primary_ifunit(), 0);
+#if defined(RTCONFIG_OPENVPN)
+			if (check_ovpn_server_enabled(openvpn_unit)){
+				start_vpnserver(openvpn_unit);
+			}
+#endif
+		}
+        }
+#endif
 #ifdef RTCONFIG_YANDEXDNS
 	else if (strcmp(script, "yadns") == 0)
 	{
@@ -4493,6 +4683,66 @@ check_ddr_done:
 		else if(strcmp(cmd[1], "up")==0) {
 			_dprintf("notify wan up!\n");
 			start_wan_if(0);
+		}
+	}
+#endif
+#if RTCONFIG_TIMEMACHINE
+	else if (strcmp(script, "timemachine") == 0)
+	{
+		if(action&RC_SERVICE_STOP) stop_timemachine();
+		if(action&RC_SERVICE_START) start_timemachine();
+	}
+	else if (strcmp(script, "afpd") == 0)
+	{
+		if(action&RC_SERVICE_STOP) stop_afpd();
+		if(action&RC_SERVICE_START) start_afpd();
+	}
+	else if (strcmp(script, "cnid_metad") == 0)
+	{
+		if(action&RC_SERVICE_STOP) stop_cnid_metad();
+		if(action&RC_SERVICE_START) start_cnid_metad();
+	}
+	else if (strcmp(script, "avahi_daemon") == 0)
+	{
+		if(action&RC_SERVICE_STOP) stop_avahi_daemon();
+		if(action&RC_SERVICE_START) start_avahi_daemon();
+	}
+#endif
+#ifdef RTCONFIG_MDNS
+	else if (strcmp(script, "mdns") == 0)
+	{
+		if(action&RC_SERVICE_STOP) stop_mdns();
+		if(action&RC_SERVICE_START) start_mdns();
+	}
+#endif
+#ifdef RTCONFIG_VPNC
+	else if (strcmp(script, "vpncall") == 0) 
+	{
+#if defined(RTCONFIG_OPENVPN)
+		int openvpnc_unit = nvram_get_int("vpn_client_unit");
+#endif
+                if (action & RC_SERVICE_STOP){
+			stop_vpnc();
+#if defined(RTCONFIG_OPENVPN)
+			stop_vpnclient(openvpnc_unit);
+#endif
+		}
+
+                if (action & RC_SERVICE_START){
+#if defined(RTCONFIG_OPENVPN)
+			if(nvram_match("vpnc_proto", "openvpn")){
+				if (check_ovpn_client_enabled(openvpnc_unit)) {
+					start_vpnclient(openvpnc_unit);
+				}
+				stop_vpnc();
+			}
+			else{
+				stop_vpnclient(openvpnc_unit);
+#endif
+				start_vpnc();
+#if defined(RTCONFIG_OPENVPN)
+			}
+#endif
 		}
 	}
 #endif
@@ -4644,7 +4894,7 @@ _dprintf("goto again(%d)...\n", getpid());
 	nvram_set("rc_service_pid", "");	
 _dprintf("handle_notifications() end\n");
 }
-#ifdef CONFIG_BCMWL5
+#if defined(CONFIG_BCMWL5) || defined(MTK_APCLI)
 void
 start_wlcscan(void)
 {
@@ -4927,6 +5177,28 @@ firmware_check_main(int argc, char *argv[])
 	return 0;
 }
 
+#ifdef RTCONFIG_BCMARM
+int
+stop_wlaide()
+{
+        if (pids("wlaide"))
+                killall("wlaide", SIGTERM);
+
+        return 0;
+}
+
+int
+start_wlaide()
+{
+        char *wlaide_argv[] = {"wlaide", NULL};
+        pid_t pid;
+
+        stop_wlaide();
+
+        return _eval(wlaide_argv, NULL, 0, &pid);
+}
+#endif
+
 int service_main(int argc, char *argv[])
 {
 	if (argc != 2) usage_exit(argv[0], "<action_service>");
@@ -4952,37 +5224,28 @@ void setup_leds()
 			led_control(LED_SWITCH, LED_OFF);
 			led_control(LED_LAN, LED_OFF);
 			led_control(LED_WAN, LED_OFF);
-#ifdef RTCONFIG_USB
-			stop_usbled();
-			led_control(LED_USB, LED_OFF);
-#endif
 		}
+#ifdef RTCONFIG_USB
+		stop_usbled();
+		led_control(LED_USB, LED_OFF);
+#endif
 
 	} else {
-		if ((model == MODEL_RTAC56U) || (model == MODEL_RTAC68U)) {
-/* In original 372, setAllLedOff() uses LED_ALL on this router without checking if
-   RTCONFIG_LED_ALL is set (it ain't).  Keep an eye in case it eventually gets fixed
-   by making it also conditional to that flag being set - in   which case I will 
-   have to update the RT-AC56U profile to use it */
-#ifdef RTCONFIG_LED_ALL
-			led_control(LED_ALL, LED_ON);
-#endif
-			if (nvram_match("wl1_radio", "1")) {
-				nvram_set("led_5g", "1");
-				led_control(LED_5G, LED_ON);
-			}
-			kill_pidfile_s("/var/run/usbled.pid", SIGTSTP); // inform usbled to reset status
-		} else {
-			led_control(LED_5G, LED_ON);
 #ifdef RTCONFIG_USB
-			start_usbled();
+		start_usbled();
 #endif
+
+		if (nvram_match("wl1_radio", "1")) {
+			nvram_set("led_5g", "1");
+			led_control(LED_5G, LED_ON);
+		}
+		if (nvram_match("wl0_radio", "1")) {
+			led_control(LED_2G, LED_ON);
 		}
 
-		led_control(LED_2G, LED_ON);
 		led_control(LED_SWITCH, LED_ON);
 		led_control(LED_POWER, LED_ON);
-        }
+	}
 }
 
 void stop_cstats(void)

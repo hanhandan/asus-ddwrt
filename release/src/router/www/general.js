@@ -228,6 +228,7 @@ function validate_string_ssid(o){
 	
 	if(o.value==""){      // to limit null SSID
 		alert('<#JS_fieldblank#>');
+		o.focus();
 		return false;
 	}	
 	
@@ -1119,10 +1120,12 @@ function change_ddns_setting(v){
 				document.form.DDNSName.parentNode.style.display = "none";
 				inputCtrl(document.form.ddns_username_x, 1);
 				inputCtrl(document.form.ddns_passwd_x, 1);
-				var disable_wild = (v == "WWW.TUNNELBROKER.NET") ? 1 : 0;
+				var disable_wild = 0;
+				if(v == "WWW.TUNNELBROKER.NET" || v == "WWW.NAMECHEAP.COM")
+					disable_wild = 1;
 				document.form.ddns_wildcard_x[0].disabled= disable_wild;
 				document.form.ddns_wildcard_x[1].disabled= disable_wild;
-				if(v == "WWW.ZONEEDIT.COM"){			 // Jieming added at 2013/03/06, remove free trail of zoneedit and add a link to direct to zoneedit 
+				if(v == "WWW.ZONEEDIT.COM" || v == "WWW.NAMECHEAP.COM"){	 // Jieming added at 2013/03/06, remove free trail of zoneedit and add a link to direct to zoneedit 
 					showhide("link", 0);
 					showhide("linkToHome", 1);
 				}
@@ -1373,6 +1376,8 @@ function openLink(s){
 			tourl = "";
 		else if (document.form.ddns_server_x.value == 'WWW.NO-IP.COM')
 			tourl = "http://www.no-ip.com/newUser.php";
+		else if (document.form.ddns_server_x.value == 'WWW.NAMECHEAP.COM')
+			tourl = "https://www.namecheap.com";
 		else	tourl = "";
 		link = window.open(tourl, "DDNSLink","toolbar=yes,location=yes,directories=no,status=yes,menubar=yes,scrollbars=yes,resizable=yes,copyhistory=no,width=640,height=480");
 	}
@@ -2061,6 +2066,7 @@ function wl_auth_mode_change(isload){
 			algos = new Array("AES", "TKIP+AES");
 		
 		/* Reconstruct algorithm array from new crypto algorithms */
+		free_options(document.form.wl_crypto);
 		document.form.wl_crypto.length = algos.length;
 		for(i=0; i<algos.length; i++){
 			document.form.wl_crypto[i] = new Option(algos[i], algos[i].toLowerCase());
@@ -2073,6 +2079,7 @@ function wl_auth_mode_change(isload){
 	change_wep_type(mode, isload);
 	
 	/* Save current network key index */
+	cur = "1";
 	for(var i = 0; i < document.form.wl_key.length; i++){
 		if(document.form.wl_key[i].selected){
 			cur = document.form.wl_key[i].value;
@@ -2085,11 +2092,10 @@ function wl_auth_mode_change(isload){
 		algos = new Array("1", "2", "3", "4");
 	else{
 		algos = new Array("1", "2", "3", "4");
-		if(!isload)
-			cur = "1";
 	}
 	
 	/* Reconstruct network key indices array from new network key indices */
+	free_options(document.form.wl_key);
 	document.form.wl_key.length = algos.length;
 	for(i=0; i<algos.length; i++){
 		document.form.wl_key[i] = new Option(algos[i], algos[i]);
@@ -2510,3 +2516,4 @@ function limit_auth_method(){
 		
 	authentication_method_change(document.form.wl_auth_mode_x);
 }
+

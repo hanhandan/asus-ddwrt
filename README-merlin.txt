@@ -1,14 +1,14 @@
-Asuswrt-Merlin - build 3.0.0.4.374.34_2 (01-Nov-2013)
-=====================================================
+Asuswrt-Merlin - build 3.0.0.4.374.35 (24-Nov-2013)
+===================================================
 
 About
 -----
-Asuswrt is the firmware developped by Asus for their newer routers.  They are 
+Asuswrt is the firmware developed by Asus for their newer routers.  They are 
 also porting it to some of their older models, like the RT-56U and RT-N16.  
 While originally based on Tomato-RT, Asus has disabled some of the 
 original Tomato features, and added others.
 
-Asuswrt-merlin is a customized version, which I am developping.
+Asuswrt-merlin is a customized version, which I am developing.
 The goal is to do some bugfixes and minor enhancements to Asus's firmware, 
 without targeting at full-blown advanced featuresets such as provided by 
 excellent projects like Tomato or DD-WRT.  Some of the features 
@@ -29,9 +29,9 @@ Supported devices are:
  * RT-AC56U
  * RT-AC68U
 
-NOTE: all the "R" versions (for example RT-N66R) the same as their "U" counterparts, 
-they are just different packages aimed at large retailers.  Firmware is 100% 
-compatible with both U and R versions of the routers.
+NOTE: all the "R" versions (for example RT-N66R) are the same as their "U" 
+counterparts, they are just different packages aimed at large retailers.  
+Firmware is 100% compatible with both U and R versions of the routers.
 
 
 Features
@@ -39,7 +39,7 @@ Features
 Here is a list of features that Asuswrt-merlin brings over the original firmware:
 
 System:
-   - Based on RT-AC66U 3.0.0.4.374_979 sources from Asus
+   - Based on RT-AC68U 3.0.0.4.374_339 sources from Asus
    - Various bugfixes and optimizations
    - Some components were updated to their latest versions, for improved stability
      and security
@@ -49,7 +49,7 @@ System:
    - Customized config files for router services
    - LED control - put your Dark Knight in Stealth Mode by turning off all LEDs
    - Entware easy setup script (alternative to Optware - the two are mutually exclusive)
-     (not available on RT-AC56U)
+     (not available on RT-AC56U/RT-AC68U)
 
 Disk sharing:
    - Enable/disable the use of shorter share names
@@ -66,8 +66,7 @@ Networking:
    - Layer7 iptables matching
    - User-defined options for WAN DHCP queries (required by some ISPs)
    - Improved NAT loopback (based on code from phuzi0n from the DD-WRT forums)
-   - OpenVPN client and server, based on code originally written by
-     Keith Moyer for Tomato and reused with his permission. (All models except RT-N16)
+   - Advanced OpenVPN client and server support (all models except RT-N16)
    - Netfilter ipset module, for efficient blacklist implemetnation
    - Configurable IPv6 firewall
    - Configurable min/max UPNP ports
@@ -100,6 +99,7 @@ integrated/enabled in the official firmware:
 - VPN Status page
 - DualWAN and Repeater mode (while it was still under development
   by Asus)
+- OpenVPN client and server support
 
 
 
@@ -179,6 +179,8 @@ certain events occur.  Those scripts must be saved in /jffs/scripts/
 - openvpn-event: Called whenever an OpenVPN server gets started/stopped, or an OpenVPN
                  client connects to a remote server.  Uses the same syntax/parameters
                  as the "up" and "down" scripts in OpenVPN.
+- qos-start: Called after both the iptables rules and tc configuration is
+             completed for QoS.
 
 Don't forget to set them as executable:
 
@@ -445,6 +447,41 @@ https://github.com/RMerl/asuswrt-merlin
 
 History
 -------
+3.0.0.4.374.35 (24-Nov-2013):
+   - NEW: Merged with Asus 374_339 GPL (from RT-AC68U).
+          Asus added some new features in this release:
+          * Support for HFS+ and Time Machine (AC56/AC68U only)
+          * OpenVPN support.  Their implementation uses the backend
+            code from Asuswrt-Merlin but with a more
+            simplistic, novice-friendly webui.  This required 
+            adapting the current webui to be able to retain some 
+            of their improvements without sacrificing the 
+            flexibility of being able to have two separate server 
+            and client configurations.
+
+   - NEW: Support for Namecheap DDNS (Patch provided by saintdev)
+   - NEW: Added qos-start user script
+   - FIXED: Incorrect range validation for UPnP ports on WAN page.
+   - FIXED: Accidentaly lock out of webui due to software hammering
+            the router's webui without valid login credentials
+   - FIXED: NAT Loopback broken with CTF enabled (AC56/AC68) (Asus bug)
+   - FIXED: Backing up your settings would return an empty CFG file.
+   - FIXED: Kernel panic when inserting ebtables rule (AC56/AC68,
+            fix backported from kernel 2.6.37)
+   - CHANGED: IPTraffic will now account for traffic going through
+              an OpenVPN tunnel
+   - CHANGED: VPN webui is now an hybrid of our original webui,
+              along with Asus's own.  This allows the addition
+              of these features developed by Asus:
+              * Ability to export an ovpn config file to give to
+                your clients
+              * Support for username/password authentcation on
+                the built-in server
+              * Ability to import a tunnel provider's .ovpn
+                config file to configure a client connection
+                on the router
+
+
 3.0.0.4.374.34_2 (01-Nov-2013):
    - FIXED: DNS resolution not working for VPN clients
             (bug in Asus 374_979)
@@ -1324,12 +1361,11 @@ good amount of the limited available nvram. ***
 Contact information
 -------------------
 SmallNetBuilder forums (preferred method: http://forums.smallnetbuilder.com/showthread.php?t=7047 as RMerlin)
-Asus Forums (http://vip.asus.com/forum/topic.aspx?board_id=11&model=RT-N66U%20(VER.B1)&SLanguage=en-us) as RMerlin.
 Website: http://www.lostrealm.ca/
 Github: https://github.com/RMerl/asuswrt-merlin
 Email: rmerl@lostrealm.ca
 Twitter: https://twitter.com/RMerlinDev
-Download: http://wwww.mediafire.com/asuswrt-merlin/
+Download: http://www.lostrealm.ca/asuswrt-merlin/download
 
 Development news will be posted on Twitter.  You can also keep a closer eye 
 on development as it happens through the Github site.

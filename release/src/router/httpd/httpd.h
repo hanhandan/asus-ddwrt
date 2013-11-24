@@ -32,6 +32,10 @@
 /* Basic authorization userid and passwd limit */
 #define AUTH_MAX 64
 
+#define DEFAULT_LOGIN_MAX_NUM	5
+
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
+
 /* Generic MIME type handler */
 struct mime_handler {
 	char *pattern;
@@ -203,6 +207,7 @@ extern void logmessage(char *logheader, char *fmt, ...);
 extern int is_private_subnet(const char *ip);
 extern char* INET6_rresolve(struct sockaddr_in6 *sin6, int numeric);
 extern char *trim_r(char *str);
+extern void write_encoded_crt(char *name, char *value);
 
 /* web-*.c */
 extern int ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit);

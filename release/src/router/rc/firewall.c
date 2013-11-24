@@ -59,8 +59,6 @@ void write_upnp_filter(FILE *fp, char *wan_if);
 void redirect_setting();
 #endif
 
-void ipt_account(FILE *fp);
-
 struct datetime{
 	char start[6];		// start time
 	char stop[6];		// stop time
@@ -2005,7 +2003,8 @@ filter_setting(char *wan_if, char *wan_ip, char *lan_if, char *lan_ip, char *log
 
 // Setup traffic accounting
 	if (nvram_match("cstats_enable", "1")) {
-		ipt_account(fp);
+		fprintf(fp, ":ipttolan - [0:0]\n:iptfromlan - [0:0]\n");
+		ipt_account(fp, NULL);
 	}
 
 #ifdef RTCONFIG_OLD_PARENTALCTRL
@@ -2969,9 +2968,10 @@ filter_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)
 	strcpy(macaccept, "");
 
 // Setup traffic accounting
-        if (nvram_match("cstats_enable", "1")) {
-                ipt_account(fp);
-        }
+	if (nvram_match("cstats_enable", "1")) {
+		fprintf(fp, ":ipttolan - [0:0]\n:iptfromlan - [0:0]\n");
+		ipt_account(fp, NULL);
+	}
 
 #ifdef RTCONFIG_OLD_PARENTALCTRL
 	parental_ctrl();
@@ -4117,6 +4117,7 @@ mangle_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)
 }
 #endif // RTCONFIG_DUALWAN
 
+#if 0
 #ifdef RTCONFIG_BCMARM
 void
 del_samba_rules(void)
@@ -4144,6 +4145,7 @@ del_samba_rules(void)
         eval("iptables", "-t", "raw", "-D", "OUTPUT", "-p", "udp",
                 "--sport", "445", "-j", "NOTRACK");
 
+/*
         eval("iptables", "-t", "filter", "-D", "INPUT", "-i", ifname, "-p", "udp",
                 "--dport", "137:139", "-j", "ACCEPT");
         eval("iptables", "-t", "filter", "-D", "INPUT", "-i", ifname, "-p", "udp",
@@ -4152,7 +4154,7 @@ del_samba_rules(void)
                 "--dport", "137:139", "-j", "ACCEPT");
         eval("iptables", "-t", "filter", "-D", "INPUT", "-i", ifname, "-p", "tcp",
                 "--dport", "445", "-j", "ACCEPT");
-
+*/
 }
 
 add_samba_rules(void)
@@ -4182,6 +4184,7 @@ add_samba_rules(void)
         eval("iptables", "-t", "raw", "-A", "OUTPUT", "-p", "udp",
                 "--sport", "445", "-j", "NOTRACK");
 
+/*
         eval("iptables", "-t", "filter", "-I", "INPUT", "-i", ifname, "-p", "udp",
                 "--dport", "137:139", "-j", "ACCEPT");
         eval("iptables", "-t", "filter", "-I", "INPUT", "-i", ifname, "-p", "udp",
@@ -4190,8 +4193,9 @@ add_samba_rules(void)
                 "--dport", "137:139", "-j", "ACCEPT");
         eval("iptables", "-t", "filter", "-I", "INPUT", "-i", ifname, "-p", "tcp",
 		"--dport", "445", "-j", "ACCEPT");
-
+*/
 }
+#endif
 #endif
 
 //int start_firewall(char *wan_if, char *wan_ip, char *lan_if, char *lan_ip)
@@ -4499,8 +4503,10 @@ int start_firewall(int wanunit, int lanunit)
 #ifdef RTCONFIG_OPENVPN
 	run_vpn_firewall_scripts();
 #endif
+#if 0	// Makes no measurable difference, and creates other issues
 #ifdef RTCONFIG_BCMARM
 	if (pids("smbd")) add_samba_rules();
+#endif
 #endif
 
 	run_custom_script("firewall-start", wan_if);
@@ -4535,7 +4541,7 @@ void enable_ip_forward(void)
 #endif
 }
 
-void ipt_account(FILE *fp) {
+void ipt_account(FILE *fp, char *interface) {
 	struct in_addr ipaddr, netmask, network;
 	char netaddrnetmask[] = "255.255.255.255/255.255.255.255 ";
 	int unit;
@@ -4548,12 +4554,19 @@ void ipt_account(FILE *fp) {
 
 	sprintf(netaddrnetmask, "%s/%s", inet_ntoa(network), nvram_safe_get("lan_netmask"));
 
-	//ipv4 only - and at least either source or destination must be WAN.
-	//Repeat this for every WAN units we support.
-        for (unit = WAN_UNIT_FIRST; unit < WAN_UNIT_MAX; unit++) {
-		if (strlen(get_wan_ifname(unit))) {
-			fprintf(fp, "-A FORWARD -i %s -o %s -m account --aaddr %s --aname lan\n", get_wan_ifname(unit), nvram_safe_get("lan_ifname"), netaddrnetmask);
-			fprintf(fp, "-A FORWARD -o %s -i %s -m account --aaddr %s --aname lan\n", get_wan_ifname(unit), nvram_safe_get("lan_ifname"), netaddrnetmask);
+	// If we are provided an interface (usually a VPN interface) then use it as WAN.
+	if (interface){
+		fprintf(fp, "iptables -A ipttolan -i %s -m account --aaddr %s --aname lan -j RETURN\n", interface, netaddrnetmask);
+		fprintf(fp, "iptables -A iptfromlan -o %s -m account --aaddr %s --aname lan -j RETURN\n", interface, netaddrnetmask);
+
+	} else {	// Create rules for every WAN interfaces available
+		fprintf(fp, "-I FORWARD -i br0 -j iptfromlan\n");
+		fprintf(fp, "-I FORWARD -o br0 -j ipttolan\n");
+		for (unit = WAN_UNIT_FIRST; unit < WAN_UNIT_MAX; unit++) {
+			if ((get_dualwan_by_unit(unit) != WANS_DUALWAN_IF_NONE) && (strlen(get_wan_ifname(unit)))) {
+				fprintf(fp, "-A ipttolan -i %s -m account --aaddr %s --aname lan -j RETURN\n", get_wan_ifname(unit), netaddrnetmask);
+				fprintf(fp, "-A iptfromlan -o %s -m account --aaddr %s --aname lan -j RETURN\n", get_wan_ifname(unit), netaddrnetmask);
+			}
 		}
 	}
 }
