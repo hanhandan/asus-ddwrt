@@ -1,5 +1,5 @@
-Asuswrt-Merlin - build 3.0.0.4.374.35 (24-Nov-2013)
-===================================================
+Asuswrt-Merlin - build 3.0.0.4.374.35_4 (30-Nov-2013)
+=====================================================
 
 About
 -----
@@ -447,6 +447,27 @@ https://github.com/RMerl/asuswrt-merlin
 
 History
 -------
+3.0.0.4.374.35_4 (30-Nov-2013):
+   - CHANGED: Added a VPN mode selector on the VPN Server Details page.
+   - FIXED: JS error on the VPN Server Details page related to PPTP
+   - FIXED: Clicking on "Apply" on VPN Details page would fail to
+            apply your new settings to a running OpenVPN server.
+   - FIXED: Some port forward rules were incorrectly generated when
+            in load-balancing mode (Asus bug)
+   - FIXED: After adding/removing a user to OpenVPN Server, the password
+            file was not immediately updated.  Note that this fix will
+            break backward compatibility with Asus as the nvram value
+            storing the list of OpenVPN user/pass had to be renamed
+            (so not to be instanced).
+  - FIXED: VPN client not working on MIPS devices (N66/AC66).
+  - FIXED: Various formatting issues with generated client.ovpn file
+
+
+3.0.0.4.374.35_2 (24-Nov-2013):
+   - FIXED: updown.sh script location was changed in
+            339, causing issues with OpenVPN clients
+
+
 3.0.0.4.374.35 (24-Nov-2013):
    - NEW: Merged with Asus 374_339 GPL (from RT-AC68U).
           Asus added some new features in this release:

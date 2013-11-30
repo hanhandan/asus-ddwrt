@@ -1097,16 +1097,27 @@ void start_vpnserver(int serverNum)
 		sprintf(&buffer[0], "vpn_crt_server%d_ca", serverNum);
 		fprintf(fp_client, "<ca>\n");
 		fprintf(fp_client, "%s", get_parsed_crt(&buffer[0], buffer2));
+		if (buffer2[strlen(buffer2)-1] != '\n') fprintf(fp_client, "\n");	// Append newline if missing
 		fprintf(fp_client, "</ca>\n");
 
 		fprintf(fp_client, "<cert>\n");
 		sprintf(&buffer[0], "vpn_crt_server%d_client_crt", serverNum);
-		fprintf(fp_client, "%s", get_parsed_crt(&buffer[0], buffer2));
+		if ( !nvram_is_empty(&buffer[0]) ) {
+			fprintf(fp_client, "%s", get_parsed_crt(&buffer[0], buffer2));
+			if (buffer2[strlen(buffer2)-1] != '\n') fprintf(fp_client, "\n");  // Append newline if missing
+		} else {
+			fprintf(fp_client, "    paste client certificate data here\n");
+		}
 		fprintf(fp_client, "</cert>\n");
 
 		fprintf(fp_client, "<key>\n");
 		sprintf(&buffer[0], "vpn_crt_server%d_client_key", serverNum);
-		fprintf(fp_client, "%s", get_parsed_crt(&buffer[0], buffer2));
+		if ( !nvram_is_empty(&buffer[0]) ) {
+			fprintf(fp_client, "%s", get_parsed_crt(&buffer[0], buffer2));
+			if (buffer2[strlen(buffer2)-1] != '\n') fprintf(fp_client, "\n");  // Append newline if missing
+		} else {
+			fprintf(fp_client, "    paste client key data here\n");
+		}
 		fprintf(fp_client, "</key>\n");
 
 		sprintf(&buffer[0], "vpn_crt_server%d_dh", serverNum);
@@ -1160,15 +1171,15 @@ void start_vpnserver(int serverNum)
 		else if(cryptMode == SECRET)
 			fprintf(fp_client, "<secret>\n");
 		fprintf(fp_client, "%s", get_parsed_crt(&buffer[0], buffer2));
+		if (buffer2[strlen(buffer2)-1] != '\n') fprintf(fp_client, "\n");  // Append newline if missing
 		if(cryptMode == TLS) {
-			fprintf(fp_client, "</tls-auth>");
+			fprintf(fp_client, "</tls-auth>\n");
 			sprintf(&buffer[0], "vpn_server%d_hmac", serverNum);
 			nvi = nvram_get_int(&buffer[0]);
 			if(nvi == 1)
-				fprintf(fp_client, " 0");
+				fprintf(fp_client, "key-direction 0\n");
 			else if(nvi == 0)
-				fprintf(fp_client, " 1");
-			fprintf(fp_client, "\n");
+				fprintf(fp_client, "key-direction 1\n");
 		}
 		else if(cryptMode == SECRET)
 			fprintf(fp_client, "</secret>\n");
@@ -1601,7 +1612,7 @@ void create_openvpn_passwd()
 	fp3=fopen("/etc/group.openvpn", "w");
 	if (!fp1 || !fp2 || !fp3) return;
 
-	nv = nvp = strdup(nvram_safe_get("vpn_server_clientlist"));
+	nv = nvp = strdup(nvram_safe_get("vpn_serverx_clientlist"));
 
 	if(nv) {
 		while ((b = strsep(&nvp, "<")) != NULL) {
