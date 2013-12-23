@@ -313,6 +313,12 @@ void start_vpnclient(int clientNum)
 	sprintf(&buffer[0], "vpn_client%d_custom", clientNum);
 	fprintf(fp, "%s", nvram_safe_get(&buffer[0]));
 	fclose(fp);
+
+	// Run postconf customs cript on it if it exists
+	sprintf(&buffer[0], "openvpnclient%d.postconf", clientNum);
+	sprintf(&buffer2[0], "/etc/openvpn/client%d/config.ovpn", clientNum);
+	run_postconf(&buffer[0], &buffer2[0]);
+
 	vpnlog(VPN_LOG_EXTRA,"Done writing config file");
 
 	// Write certification and key files
@@ -561,6 +567,7 @@ void start_vpnserver(int serverNum)
 	int cpu_num = sysconf(_SC_NPROCESSORS_CONF);
 #endif
 	char nv1[32], nv2[32], nv3[32], fpath[128];
+	int valid = 0;
 
 	sprintf(&buffer[0], "start_vpnserver%d", serverNum);
 	if (getpid() != 1) {
@@ -967,6 +974,11 @@ void start_vpnserver(int serverNum)
 	fprintf(fp, "%s", nvram_safe_get(&buffer[0]));
 	fclose(fp);
 
+	// Run postconf customs cript on it if it exists
+	sprintf(&buffer[0], "openvpnserver%d.postconf", serverNum);
+	sprintf(&buffer2[0], "/etc/openvpn/server%d/config.ovpn", serverNum);
+	run_postconf(&buffer[0], &buffer2[0]);
+
 	vpnlog(VPN_LOG_EXTRA,"Done writing server config file");
 
 	// Write certification and key files
@@ -1100,9 +1112,27 @@ void start_vpnserver(int serverNum)
 		if (buffer2[strlen(buffer2)-1] != '\n') fprintf(fp_client, "\n");	// Append newline if missing
 		fprintf(fp_client, "</ca>\n");
 
+		/*
+		   See if stored client cert was signed with our stored CA.  If not, it means 
+		   the CA was changed by the user and the current client crt/key no longer match,
+		   so we should not insert them in the exported client ovp file.
+		*/
+		fp = fopen("/tmp/test.crt", "w");
+		sprintf(&buffer[0], "vpn_crt_server%d_client_crt", serverNum);
+		fprintf(fp, "%s", get_parsed_crt(&buffer[0], buffer2));
+		fclose(fp);
+
+		sprintf(&buffer[0], "openssl verify -CAfile /etc/openvpn/server%d/ca.crt /tmp/test.crt > /tmp/output.txt", serverNum);
+		system(&buffer[0]);
+		f_read_string("/tmp/output.txt", &buffer[0], 64);
+                unlink("/tmp/test.crt");
+
+		if (!strncmp(&buffer[0],"/tmp/test.crt: OK",17))
+			valid = 1;
+
 		fprintf(fp_client, "<cert>\n");
 		sprintf(&buffer[0], "vpn_crt_server%d_client_crt", serverNum);
-		if ( !nvram_is_empty(&buffer[0]) ) {
+		if ((valid == 1) && ( !nvram_is_empty(&buffer[0]) ) ) {
 			fprintf(fp_client, "%s", get_parsed_crt(&buffer[0], buffer2));
 			if (buffer2[strlen(buffer2)-1] != '\n') fprintf(fp_client, "\n");  // Append newline if missing
 		} else {
@@ -1112,7 +1142,7 @@ void start_vpnserver(int serverNum)
 
 		fprintf(fp_client, "<key>\n");
 		sprintf(&buffer[0], "vpn_crt_server%d_client_key", serverNum);
-		if ( !nvram_is_empty(&buffer[0]) ) {
+		if ((valid == 1) && ( !nvram_is_empty(&buffer[0]) ) ) {
 			fprintf(fp_client, "%s", get_parsed_crt(&buffer[0], buffer2));
 			if (buffer2[strlen(buffer2)-1] != '\n') fprintf(fp_client, "\n");  // Append newline if missing
 		} else {

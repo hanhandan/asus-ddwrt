@@ -461,6 +461,7 @@ void create_passwd(void)
 		fappend(f, "/etc/shadow.openvpn");
 #endif
 		fclose(f);
+		run_postconf("shadow.postconf", "/etc/shadow");
 	}
 	umask(m);
 	chmod("/etc/shadow", 0600);
@@ -486,6 +487,7 @@ void create_passwd(void)
 	fappend_file("/etc/passwd", "/etc/passwd.openvpn");
 #endif
 	fappend_file("/etc/passwd", "/jffs/configs/passwd.add");
+	run_postconf("passwd.postconf","/etc/passwd");
 
 	sprintf(s,
 		"%s:*:0:\n"
@@ -496,8 +498,8 @@ void create_passwd(void)
 		http_user);
 	f_write_string("/etc/gshadow", s, 0, 0644);
 	fappend_file("/etc/gshadow", "/etc/gshadow.custom");
-//      append_custom_config();
         fappend_file("/etc/gshadow", "/jffs/configs/gshadow.add");
+	run_postconf("gshadow.postconf","/etc/gshadow");
 
 	f_write_string("/etc/group",
 		"root:x:0:\n"
@@ -511,6 +513,7 @@ void create_passwd(void)
 	fappend_file("/etc/group", "/etc/group.openvpn");
 #endif
 	fappend_file("/etc/group", "/jffs/configs/group.add");
+	run_postconf("group.postconf","/etc/group");
 }
 
 void start_dnsmasq(int force)
@@ -575,6 +578,7 @@ void start_dnsmasq(int force)
 		append_custom_config("hosts", fp);
 		fclose(fp);
 		use_custom_config("hosts", "/etc/hosts");
+		run_postconf("hosts.postconf","/etc/hosts");
 	} else
 		perror("/etc/hosts");
 
@@ -752,6 +756,7 @@ void start_dnsmasq(int force)
 	fclose(fp);
 
 	use_custom_config("dnsmasq.conf","/etc/dnsmasq.conf");
+	run_postconf("dnsmasq.postconf","/etc/dnsmasq.conf");
 
 	/* Create resolv.conf with empty nameserver list */
 	f_write(dmresolv, NULL, 0, FW_APPEND, 0666);
@@ -1043,6 +1048,7 @@ void start_dhcp6s(void)
 	fclose(fp);
 
 	use_custom_config("dhcp6s.conf", "/etc/dhcp6s.conf");
+	run_postconf("dhcp6s.postconf", "/etc/dhcp6s.conf");
 
 	if (nvram_get_int("ipv6_debug"))
 		dhcp6s_argv[index++] = "-D";
@@ -1169,6 +1175,7 @@ void start_radvd(void)
 		fclose(f);
 
 		use_custom_config("radvd.conf", "/etc/radvd.conf");
+		run_postconf("radvd.postconf", "/etc/radvd.conf");
 
 		chmod("/etc/radvd.conf", 0400);
 #if 0
@@ -1613,16 +1620,19 @@ stop_dcsd(void)
 
 
 //2008.10 magic{
-int start_networkmap(void)
+int start_networkmap(int bootwait)
 {
-	char *networkmap_argv[] = {"networkmap", NULL};
+	char *networkmap_argv[] = {"networkmap", NULL, NULL};
 	pid_t pid;
 
 	//if (!is_routing_enabled())
 	//	return 0;
 
+	if (bootwait)
+		networkmap_argv[1] = "--bootwait";
+
 	_eval(networkmap_argv, NULL, 0, &pid);
-	
+
 	return 0;
 }
 
@@ -2830,6 +2840,7 @@ TRACE_PT("config 5\n");
 				fprintf(f, "\ndeny 0-65535 0.0.0.0/0 0-65535\n");
 				fclose(f);
 				use_custom_config("upnp", "/etc/upnp/config");
+				run_postconf("upnp.postconf", "/etc/upnp/config");
 				xstart("miniupnpd", "-f", "/etc/upnp/config");
 			}
 		}
@@ -3123,7 +3134,7 @@ start_services(void)
 	start_cron();
 #endif
 	start_infosvr();
-	start_networkmap();
+	start_networkmap(1);
 	restart_rstats();
 	restart_cstats();
 #ifdef RTCONFIG_DSL
@@ -3842,7 +3853,7 @@ again:
 			start_lan_port(0);
 
 			start_httpd();
-			start_networkmap();
+			start_networkmap(0);
 #ifdef RTCONFIG_USB_PRINTER
 			start_u2ec();
 #endif
@@ -3929,7 +3940,7 @@ again:
 			start_lan_port(6);
 
 			start_httpd();
-			start_networkmap();
+			start_networkmap(0);
 #ifdef RTCONFIG_USB_PRINTER
 			start_u2ec();
 #endif
@@ -3972,7 +3983,7 @@ again:
 			start_wlcconnect();
 #endif
 
-			start_networkmap();
+			start_networkmap(0);
 #ifdef RTCONFIG_USB_PRINTER
 			start_u2ec();
 #endif
@@ -4079,7 +4090,7 @@ check_ddr_done:
 			restart_wireless();
 		}
 		if(action&RC_SERVICE_START) {
-			start_networkmap();
+			start_networkmap(0);
 #ifdef RTCONFIG_USB_PRINTER
 			start_u2ec();
 #endif
@@ -4578,7 +4589,7 @@ check_ddr_done:
 			start_lan_wlc();
 			start_dnsmasq(0);
 			start_httpd();
-			start_networkmap();
+			start_networkmap(0);
 #ifdef RTCONFIG_USB_PRINTER
 			start_u2ec();
 #endif
