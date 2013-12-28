@@ -1,4 +1,4 @@
-Asuswrt-Merlin - build 3.0.0.4.374.36 (xx-xxx-2013)
+Asuswrt-Merlin - build 3.0.0.4.374.36 (23-Dec-2013)
 ===================================================
 
 About
@@ -536,7 +536,7 @@ https://github.com/RMerl/asuswrt-merlin
 
 History
 -------
-3.0.0.4.374.36 (xx-xxx-2013):
+3.0.0.4.374.36 Beta 1 (23-Dec-2013):
    - NEW: Added ECDSA key support for SSH
    - NEW: postconf scripts.  This allow you to modify a generated
           config file (for example, smb.conf) before the service
@@ -549,6 +549,8 @@ History
    - CHANGED: Extended retry period for WAN DHCP queries to 160 secs
               in Normal DHCP mode to give time to Charter to 
               unblacklist customers being accidentally blocked by them.
+   - CHANGED: Downgraded rp-pppoe from 3.11 to 3.10 to see if it's
+              more stable for some PPPoE users
    - FIXED: Some VPN client username/passwords were incorrectly handled
    - FIXED: When disabling Dual WAN, WAN unit wasn't being reset to 
             unit 0, preventing users from editing the correct unit 
