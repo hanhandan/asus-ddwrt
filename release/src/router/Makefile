@@ -86,6 +86,9 @@ ifeq ($(RTCONFIG_NORTON),y)
 export CFLAGS += -D__CONFIG_NORTON__
 endif
 
+ifeq ($(RTCONFIG_DEBUG),y)
+export CFLAGS += -g
+endif
 #
 #
 #
@@ -178,8 +181,8 @@ obj-y += eapd$(BCMEX)/linux
 obj-$(CONFIG_LIBBCM) += libbcm
 obj-$(CONFIG_LIBUPNP) += libupnp
 obj-$(RTCONFIG_WPS) += wps$(BCMEX)
-obj-$(RTCONFIG_EMF) += emf$(BCMEX)
-obj-$(RTCONFIG_EMF) += igs$(BCMEX)
+obj-$(RTCONFIG_EMF) += emf
+obj-$(RTCONFIG_EMF) += igs
 endif
 
 obj-y += libbcmcrypto
@@ -269,6 +272,7 @@ obj-$(RTCONFIG_IPV6) += libdaemon
 obj-$(RTCONFIG_IPV6) += radvd
 obj-$(RTCONFIG_IPV6) += dhcpv6
 #obj-$(RTCONFIG_IPV6) += ecmh
+obj-$(RTCONFIG_IPV6) += ndisc6
 
 obj-$(RTCONFIG_MEDIA_SERVER) += zlib
 obj-$(RTCONFIG_MEDIA_SERVER) += sqlite
@@ -633,6 +637,12 @@ endif
 	cd $(TARGETDIR)/lib/modules/*/kernel/drivers/media && mv video/* . && rm -rf video || true
 
 	cd $(TARGETDIR)/lib/modules/*/kernel/drivers/net && mv bcm57xx/* . && rm -rf bcm57xx || true
+
+# Temporary, as we don't have up-to-date linkable objects from Asus, so use prebuilt modules (RM)
+ifneq ($(RTCONFIG_BCMARM),y)
+	cp emf/emf.ko $(TARGETDIR)/lib/modules/*/kernel/drivers/net/emf/
+	cp emf/igs.ko $(TARGETDIR)/lib/modules/*/kernel/drivers/net/igs/
+endif
 	cd $(TARGETDIR)/lib/modules/*/kernel/drivers/net && mv emf$(BCMEX)/* . && rm -rf emf$(BCMEX) || true
 	cd $(TARGETDIR)/lib/modules/*/kernel/drivers/net && mv igs$(BCMEX)/* . && rm -rf igs$(BCMEX) || true
 ifeq ($(RTAC53U),y)
@@ -1563,19 +1573,44 @@ radvd: libdaemon radvd/stamp-h1
 	make -C $@
 
 radvd-clean:
-	-@$(MAKE) -C radvd distclean
+	-@ [ ! -f radvd/Makefile ] || $(MAKE) -C radvd distclean
 	@rm -f radvd/stamp-h1
 
 radvd-install: radvd
 	install -D radvd/radvd $(INSTALLDIR)/radvd/usr/sbin/radvd
 	$(STRIP) $(INSTALLDIR)/radvd/usr/sbin/radvd
 
+ndisc6/stamp-h1:
+ifeq ($(RTCONFIG_BCMARM),y)
+	cd ndisc6 && CFLAGS="-Os $(EXTRACFLAGS) -ffunction-sections -fdata-sections -I$(SRCBASE)/include -I$(TOP)/shared" \
+	LDFLAGS="-ffunction-sections -fdata-sections -Wl,--gc-sections" \
+	$(CONFIGURE) --prefix="" --disable-dependency-tracking
+else
+	cd ndisc6 && CFLAGS="-Os -ffunction-sections -fdata-sections -I$(SRCBASE)/include -I$(TOP)/shared" \
+	LDFLAGS="-ffunction-sections -fdata-sections -Wl,--gc-sections -L$(TOP)/nvram$(BCMEX) -L$(TOP)/shared" \
+	$(CONFIGURE) --prefix="" LIBS='-lnvram -lshared' --disable-dependency-tracking
+endif
+	-@$(MAKE) -C ndisc6 clean
+	@touch $@
+
+ndisc6: ndisc6/stamp-h1
+	$(MAKE) -C $@
+
+ndisc6-clean:
+	-@[ ! -f ndisc6/Makefile ] || $(MAKE) -C ndisc6 clean
+	-@[ ! -f ndisc6/Makefile ] || $(MAKE) -C ndisc6 distclean
+	-@[ -f ndisc6/stamp-h1 ] || rm -f ndisc6/stamp-h1
+
+ndisc6-install: ndisc6
+	install -D ndisc6/rdnssd/rdnssd $(INSTALLDIR)/ndisc6/usr/sbin/rdnssd
+	$(STRIP) $(INSTALLDIR)/ndisc6/usr/sbin/rdnssd
+
 dhcpv6/stamp-h1:
 	@cd dhcpv6 && \
 	CFLAGS="-Os -Wall $(EXTRACFLAGS) -D_GNU_SOURCE -ffunction-sections -fdata-sections -DUSE_DHCP6SRV" \
 	LDFLAGS="-ffunction-sections -fdata-sections -Wl,--gc-sections -fPIC" \
 	ac_cv_func_setpgrp_void=yes \
-	$(CONFIGURE) --prefix= --with-localdbdir=/var
+	$(CONFIGURE) --prefix= --with-localdbdir=/var --with-sysconfdir=/etc
 	-@$(MAKE) -C dhcpv6 clean
 	@touch $@
 
@@ -2321,16 +2356,16 @@ hotplug2-install: hotplug2
 	$(MAKE) -C hotplug2 install PREFIX=$(INSTALLDIR)/hotplug2 SUBDIRS=""
 	$(MAKE) -C hotplug2/examples install PREFIX=$(INSTALLDIR)/hotplug2/rom KERNELVER=$(LINUX_KERNEL)
 
-emf$(BCMEX):
+emf:
 	$(MAKE) -C emf$(BCMEX)/emfconf CROSS=$(CROSS_COMPILE)
 
-emf$(BCMEX)-install:
+emf-install:
 ifeq ($(RTCONFIG_EMF),y)
 	install -d $(TARGETDIR)
 	$(MAKE) -C emf$(BCMEX)/emfconf CROSS=$(CROSS_COMPILE) INSTALLDIR=$(INSTALLDIR) install
 endif
 
-emf$(BCMEX)-clean:
+emf-clean:
 	-@$(MAKE) -C emf$(BCMEX)/emfconf clean
 
 igs:
@@ -2476,7 +2511,7 @@ termcap: termcap/Makefile
 	$(MAKE) -C $@
 
 termcap/Makefile:
-	( cd termcap && $(CONFIGURE) )
+	( cd termcap && $(CONFIGURE) && touch termcap.info)
 
 termcap-install:
 	# We don't need to install termcap to target filesystem.
@@ -2492,6 +2527,7 @@ gdb/Makefile:
 	( cd gdb && \
 	  TUI_LIBRARY=$(TOP)/termcap/libtermcap.a \
 	  LDFLAGS=-L$(TOP)/termcap \
+	  CFLAGS_FOR_BUILD= \
 	  $(CONFIGURE) --bindir=/sbin \
 	)
 

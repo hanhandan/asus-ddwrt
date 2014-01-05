@@ -425,6 +425,9 @@ void kfree_skb(struct sk_buff *skb)
 #ifdef CONFIG_INET_GRO
 static void BCMFASTPATH_HOST __copy_skb_header(struct sk_buff *new, const struct sk_buff *old)
 {
+#ifdef PKTC
+	memset(new->pktc_cb, 0, sizeof(new->pktc_cb));
+#endif
 	new->tstamp		= old->tstamp;
 	new->dev		= old->dev;
 	new->transport_header	= old->transport_header;

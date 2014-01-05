@@ -1,4 +1,4 @@
-Asuswrt-Merlin - build 3.0.0.4.374.37 (31-Dec-2013)
+Asuswrt-Merlin - build 3.0.0.4.374.38 (xx-xxx-2014)
 ===================================================
 
 About
@@ -41,7 +41,7 @@ Here is a list of features that Asuswrt-merlin brings over the original
 firmware:
 
 System:
-   - Based on RT-AC68U 3.0.0.4.374_501 sources from Asus
+   - Based on RT-N66U 3.0.0.4.374_2078 sources (unreleased) from Asus
    - Various bugfixes and optimizations
    - Some components were updated to newerversions, for improved
      stability and security
@@ -534,6 +534,22 @@ https://github.com/RMerl/asuswrt-merlin
 
 History
 -------
+3.0.0.4.374.38 (xx-xxx-2014):
+   - NEW: Merged with 374_2078 GPL provided by Asus (From RT-N66U).
+          Notable changes:
+      * Updated SDK - 6.30.163.2002 (r382208)
+      * PPPoE HW acceleration should be fixed by the new SDK
+      * Updated AiCloud closed source components (MIPS)
+
+   - CHANGED: Updated AC56 and AC68U wifi driver and CTF to
+              January 3rd builds (provided by Asus)
+   - FIXED: emf/igs userspace tools missing on ARM devices
+   - FIXED: USB devices missing on MIPS devices (regression
+            in 374.37)
+   - FIXED: Wifi stability on ARM devices (regression in
+            374.37)
+
+
 3.0.0.4.374.37 (31-Dec-2013):
    - NEW: Merged with Asus 374_501 GPL (from RT-AC68U).
           Notable changes in this version:
