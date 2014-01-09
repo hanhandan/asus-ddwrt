@@ -181,8 +181,8 @@ obj-y += eapd$(BCMEX)/linux
 obj-$(CONFIG_LIBBCM) += libbcm
 obj-$(CONFIG_LIBUPNP) += libupnp
 obj-$(RTCONFIG_WPS) += wps$(BCMEX)
-obj-$(RTCONFIG_EMF) += emf
-obj-$(RTCONFIG_EMF) += igs
+obj-$(RTCONFIG_EMF) += emf$(BCMEX)
+obj-$(RTCONFIG_EMF) += igs$(BCMEX)
 endif
 
 obj-y += libbcmcrypto
@@ -637,12 +637,6 @@ endif
 	cd $(TARGETDIR)/lib/modules/*/kernel/drivers/media && mv video/* . && rm -rf video || true
 
 	cd $(TARGETDIR)/lib/modules/*/kernel/drivers/net && mv bcm57xx/* . && rm -rf bcm57xx || true
-
-# Temporary, as we don't have up-to-date linkable objects from Asus, so use prebuilt modules (RM)
-ifneq ($(RTCONFIG_BCMARM),y)
-	cp emf/emf.ko $(TARGETDIR)/lib/modules/*/kernel/drivers/net/emf/
-	cp emf/igs.ko $(TARGETDIR)/lib/modules/*/kernel/drivers/net/igs/
-endif
 	cd $(TARGETDIR)/lib/modules/*/kernel/drivers/net && mv emf$(BCMEX)/* . && rm -rf emf$(BCMEX) || true
 	cd $(TARGETDIR)/lib/modules/*/kernel/drivers/net && mv igs$(BCMEX)/* . && rm -rf igs$(BCMEX) || true
 ifeq ($(RTAC53U),y)
@@ -2356,16 +2350,16 @@ hotplug2-install: hotplug2
 	$(MAKE) -C hotplug2 install PREFIX=$(INSTALLDIR)/hotplug2 SUBDIRS=""
 	$(MAKE) -C hotplug2/examples install PREFIX=$(INSTALLDIR)/hotplug2/rom KERNELVER=$(LINUX_KERNEL)
 
-emf:
+emf$(BCMEX):
 	$(MAKE) -C emf$(BCMEX)/emfconf CROSS=$(CROSS_COMPILE)
 
-emf-install:
+emf$(BCMEX)-install:
 ifeq ($(RTCONFIG_EMF),y)
 	install -d $(TARGETDIR)
 	$(MAKE) -C emf$(BCMEX)/emfconf CROSS=$(CROSS_COMPILE) INSTALLDIR=$(INSTALLDIR) install
 endif
 
-emf-clean:
+emf$(BCMEX)-clean:
 	-@$(MAKE) -C emf$(BCMEX)/emfconf clean
 
 igs:

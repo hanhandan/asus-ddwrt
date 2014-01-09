@@ -423,7 +423,7 @@ ifeq ($(config-targets),1)
 include $(srctree)/arch/$(ARCH)/Makefile
 export KBUILD_DEFCONFIG
 
-config:  scripts_basic outputmakefile FORCE
+config: scripts_basic outputmakefile FORCE
 	$(Q)mkdir -p include/linux include/config
 	$(Q)$(MAKE) $(build)=scripts/kconfig $@
 
@@ -532,22 +532,22 @@ CFLAGS += $(call cc-option,-Wdeclaration-after-statement,)
 CFLAGS += $(call cc-option,-Wno-pointer-sign,)
 
 ifneq ($(CONFIG_BCM_CTF),)
-CFLAGS += -DHNDCTF -DCTFPOOL -DCTFMAP
+CFLAGS += -DHNDCTF -DCTFPOOL -DCTFMAP -DPKTC -DCTF_PPPOE -DCTF_PPTP
 ifneq ($(CONFIG_WL_USBAP),)
 CFLAGS += -DCTFPOOL_SPINLOCK
+endif
+ifneq ($(CONFIG_IPV6),)
+CFLAGS += -DCTF_IPV6
 endif
 endif
 
 ifdef CONFIG_PLC
 CFLAGS += -DPLC
+CFLAGS += -DET_PLC_NO_VLAN_TAG_RX -DWL_PLC_NO_VLAN_TAG_TX -DWL_PLC_NO_VLAN_TAG_RX
 endif
 
 ifeq ($(CONFIG_MTD_NFLASH),y)
 CFLAGS += -DNFLASH_SUPPORT
-endif
-
-ifdef CONFIG_PROXYARP
-CFLAGS += -DPROXYARP
 endif
 
 ifeq ($(CONFIG_DUAL_TRX),y)
@@ -558,11 +558,6 @@ ifeq ($(CONFIG_NVRAM_64K),y)
 ifeq ($(BUILD_NAME),RT-N66U)
 CFLAGS += -DRTN66U_NVRAM_64K_SUPPORT
 endif
-
-ifeq ($(CONFIG_CFE_NVRAM_CHK),y)
-CFLAGS += -DCFE_NVRAM_CHK_SUPPORT
-endif
-
 endif
 
 # Default kernel image to build when no specific target is given.
@@ -1497,10 +1492,9 @@ endif
 	$(Q)$(MAKE) $(build)=$(build-dir) $(target-dir)$(notdir $@)
 
 # Modules
-/:  prepare scripts FORCE
+/: prepare scripts FORCE
 	$(Q)$(MAKE) KBUILD_MODULES=$(if $(CONFIG_MODULES),1) \
 	$(build)=$(build-dir)
-
 %/: prepare scripts FORCE
 	$(Q)$(MAKE) KBUILD_MODULES=$(if $(CONFIG_MODULES),1) \
 	$(build)=$(build-dir)

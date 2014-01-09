@@ -232,7 +232,6 @@ obj-$(CONFIG_ET) += et/
 obj-$(CONFIG_BCM57XX) += bcm57xx/
 obj-$(CONFIG_WL) += wl/
 obj-$(CONFIG_EMF) += emf/ igs/
-obj-$(CONFIG_PROXYARP) += proxyarp/
 
 obj-y += wireless/
 obj-$(CONFIG_NET_TULIP) += tulip/

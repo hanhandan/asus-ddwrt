@@ -73,7 +73,7 @@ _nflash_mtd_read(struct mtd_info *mtd, struct mtd_partition *part,
 	uchar *tmpbuf = NULL;
 	int size;
 	uint offset, blocksize, mask, blk_offset, off;
-	uint skip_bytes = 0, good_bytes = 0, page_size;
+	uint skip_bytes = 0, good_bytes = 0;
 	int blk_idx, i;
 	int need_copy = 0;
 	uchar *ptr = NULL;
@@ -96,14 +96,13 @@ _nflash_mtd_read(struct mtd_info *mtd, struct mtd_partition *part,
 	if ((from + len) > mtd->size)
 		return -EINVAL;
 	offset = from;
-	page_size = nflash->nfl->pagesize;
-	if ((offset & (page_size - 1)) != 0) {
-		extra = offset & (page_size - 1);
+	if ((offset & (NFL_SECTOR_SIZE - 1)) != 0) {
+		extra = offset & (NFL_SECTOR_SIZE - 1);
 		offset -= extra;
 		len += extra;
 		need_copy = 1;
 	}
-	size = (len + (page_size - 1)) & ~(page_size - 1);
+	size = (len + (NFL_SECTOR_SIZE - 1)) & ~(NFL_SECTOR_SIZE - 1);
 	if (size != len)
 		need_copy = 1;
 	if (!need_copy) {
@@ -154,7 +153,7 @@ _nflash_mtd_read(struct mtd_info *mtd, struct mtd_partition *part,
 		}
 
 		if ((bytes = hndnand_read(nflash->nfl,
-			off, page_size, ptr)) < 0) {
+			off, NFL_SECTOR_SIZE, ptr)) < 0) {
 			ret = bytes;
 			goto done;
 		}
@@ -280,7 +279,7 @@ nflash_mtd_write(struct mtd_info *mtd, loff_t to, size_t len, size_t *retlen, co
 			write_len = blocksize;
 			while (write_len) {
 				if ((bytes = hndnand_write(nflash->nfl,
-				from + skip_bytes, (uint)write_len,
+				(uint)from + skip_bytes, (uint)write_len,
 				(uchar *)write_ptr)) < 0) {
 					hndnand_mark_badb(nflash->nfl, off);
 					nflash->map[blk_idx] = 1;
@@ -493,7 +492,7 @@ nflash_mtd_init(void)
 	nflash.mtd.erase = nflash_mtd_erase;
 	nflash.mtd.read = nflash_mtd_read;
 	nflash.mtd.write = nflash_mtd_write;
-	nflash.mtd.writesize = info->pagesize;
+	nflash.mtd.writesize = NFL_SECTOR_SIZE;
 	nflash.mtd.priv = &nflash;
 	nflash.mtd.owner = THIS_MODULE;
 	nflash.mtd.mutex = partitions_mutex_init();
