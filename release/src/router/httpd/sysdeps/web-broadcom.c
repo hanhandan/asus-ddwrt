@@ -806,9 +806,7 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 	int ii, jj;
 	char *arplist = NULL, *arplistptr;
 	char *leaselist = NULL, *leaselistptr;
-#ifdef RTCONFIG_DNSMASQ
 	char hostnameentry[16];
-#endif
 	char ipentry[40], macentry[18];
 	int found;
 	char rxrate[12], txrate[12];
@@ -925,14 +923,12 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 	arplist = read_whole_file("/proc/net/arp");
 	/* Obtain lease list - we still need the arp list for
 	   cases where a device uses a static IP rather than DHCP */
-#ifdef RTCONFIG_DNSMASQ
 	leaselist = read_whole_file("/var/lib/misc/dnsmasq.leases");
-#endif
 
 	ret += websWrite(wp, "\n");
  	ret += websWrite(wp, "Stations  (flags: P=Powersave Mode, S=Short GI, T=STBC, A=Associated, U=Authenticated)\n");
  	ret += websWrite(wp, "----------------------------------------\n");
- 	
+
 	if (leaselist) {
 		ret += websWrite(wp, "%-18s%-16s%-16s%-8s%-15s%-10s%-5s\n",
 				"MAC", "IP Address", "Name", "  RSSI", "  Rx/Tx Rate", "Connected", "Flags");
@@ -962,7 +958,6 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 			ret += websWrite(wp, "%-16s", (found ? ipentry : ""));
 		}
 
-#ifdef RTCONFIG_DNSMASQ
 		// Retrieve hostname from dnsmasq leases
 		if (leaselist) {
 			leaselistptr = leaselist;
@@ -979,7 +974,6 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 
 			ret += websWrite(wp, "%-15s ", (found ? hostnameentry : ""));
 		}
-#endif
 
 // RSSI
 		memcpy(&scb_val.ea, &auth->ea[i], ETHER_ADDR_LEN);
@@ -1092,7 +1086,6 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 					ret += websWrite(wp, "%-16s", (found ? ipentry : ""));
 				}
 
-#ifdef RTCONFIG_DNSMASQ
 				// Retrieve hostname from dnsmasq leases
 				if (leaselist) {
 					leaselistptr = leaselist;
@@ -1109,7 +1102,6 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 
 					ret += websWrite(wp, "%-15s ", (found ? hostnameentry : ""));
 				}
-#endif
 
 // RSSI
 				memcpy(&scb_val.ea, &auth->ea[ii], ETHER_ADDR_LEN);
@@ -1232,6 +1224,10 @@ wl_extent_channel(int unit)
 			return 0;
 
 		bi = (wl_bss_info_t*)(buf + 4);
+		if (unit == 1) {	// Return bandwidth instead of channel
+			return bw_chspec_to_mhz(bi->chanspec);
+		}
+
 		if (dtoh32(bi->version) == WL_BSS_INFO_VERSION ||
 		   dtoh32(bi->version) == LEGACY2_WL_BSS_INFO_VERSION ||
 		   dtoh32(bi->version) == LEGACY_WL_BSS_INFO_VERSION)

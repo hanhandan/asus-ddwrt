@@ -1186,6 +1186,9 @@ void start_dhcp6s(void)
 	if (!ipv6_enabled())
 		return;
 
+	if (!nvram_get_int("ipv6_dhcp6s_enable"))
+		return;
+
 	service = get_ipv6_service();
 	stateful = (service == IPV6_NATIVE_DHCP) ?
 		nvram_get_int("ipv6_autoconf_type") : 0;
@@ -1301,10 +1304,13 @@ void start_radvd(void)
 	char *dns[3];
 	int dns_count, i;
 #endif
-if (getpid() != 1) {
+
+	if (getpid() != 1) {
 		notify_rc("start_radvd");
 		return;
 	}
+
+	stop_radvd();
 
 	if (!ipv6_enabled())
 		return;
@@ -4396,6 +4402,7 @@ again:
 			start_u2ec();
 #endif
 		}
+		setup_leds();
 	}
 #ifdef CONFIG_BCMWL5
 #ifdef RTCONFIG_BCMWL6A
@@ -5854,10 +5861,11 @@ void setup_leds()
 	model = get_model();
 
 	if (nvram_get_int("led_disable") == 1) {
-		if ((model == MODEL_RTAC56U) || (model == MODEL_RTAC68U)) {
+		if ((model == MODEL_RTAC56U) || (model == MODEL_RTAC68U) || (model == MODEL_RTAC87U)) {
 			setAllLedOff();
+			if (model == MODEL_RTAC87U)
+				led_control(LED_5G, LED_OFF);
 		} else {        // TODO: Can other routers also use the same code?
-
 			led_control(LED_2G, LED_OFF);
 			led_control(LED_5G, LED_OFF);
 			led_control(LED_POWER, LED_OFF);
@@ -5884,7 +5892,9 @@ void setup_leds()
 		if (nvram_match("wl0_radio", "1")) {
 			led_control(LED_2G, LED_ON);
 		}
-
+#ifdef RTCONFIG_QTN
+		setAllLedOn_qtn();
+#endif
 		led_control(LED_SWITCH, LED_ON);
 		led_control(LED_POWER, LED_ON);
 	}
