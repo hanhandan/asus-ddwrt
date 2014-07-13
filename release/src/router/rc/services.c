@@ -3386,10 +3386,7 @@ start_services(void)
 
 	start_telnetd();
 #ifdef RTCONFIG_SSH
-	if (nvram_match("sshd_enable", "1"))
-	{
-		start_sshd();
-	}
+	start_sshd();
 #endif
 
 #ifdef CONFIG_BCMWL5
@@ -3447,7 +3444,10 @@ start_services(void)
 #ifdef RTCONFIG_TOAD
 	start_toads();
 #endif
-//	start_upnp();
+
+        // Only start if it wasn't already started by another service
+        if (!pids("miniupnpd"))
+                start_upnp();
 
 #if defined(RTCONFIG_PPTPD) || defined(RTCONFIG_ACCEL_PPTPD)
 	start_pptpd();
@@ -4969,10 +4969,7 @@ check_ddr_done:
 			refresh_ntpc();
 			start_logger();
 #ifdef RTCONFIG_SSH
-			if (nvram_match("sshd_enable", "1"))
-			{
-				start_sshd();
-			}
+			start_sshd();
 #endif
 			start_telnetd();
 			start_httpd();
