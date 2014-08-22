@@ -1257,7 +1257,7 @@ load_dictionary (char *lang, pkw_t pkw)
 	int remain_dict;
 	int dict_size = 0;
 //	struct timeval tv1, tv2;
-	const char *eng_dict = "EN.dict";
+	const char *eng_dict = "CN.dict";
 #ifndef RELOAD_DICT
 	static char loaded_dict[12] = {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'};
 #endif  // RELOAD_DICT
@@ -1482,7 +1482,7 @@ load_dictionary (char *lang, pkw_t pkw)
 	FILE *dfp = NULL;
 	int dict_size = 0;
 //	struct timeval tv1, tv2;
-	const char *eng_dict = "EN.dict";
+	const char *eng_dict = "CN.dict";
 #ifndef RELOAD_DICT
 	static char loaded_dict[12] = {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'};
 #endif  // RELOAD_DICT

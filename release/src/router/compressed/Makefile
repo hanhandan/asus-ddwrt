@@ -69,7 +69,7 @@ OBJS-mips = boot.o sisdram.o sbsdram.o aisdram.o sflash.o hndmips.o sbutils.o ai
 # We should not compile sbutils.o but need add more compile directive in siutils.c
 OBJS-arm = bootarm.o  aisdram_ca9.o siutils.o hndarm_ca9.o pcieinit_ca9.o sbutils.o aiutils.o nicpci.o 
 ifeq ($(RTCONFIG_BCM7),y)
-OBJS-arm += pcie_core.o
+#OBJS-arm += pcie_core.o
 endif
 OBJECTS := $(OBJS-$(ARCH))
 OBJECTS += load.o hndchipc.o hndpmu.o min_osl.o bcmutils.o \

@@ -42,6 +42,15 @@
 #include <wlscan.h>
 #ifdef RTCONFIG_WPS
 #include <wps_ui.h>
+#else
+#define WPS_UI_PORT 0
+#define WPS_UI_METHOD_PIN 0
+#define WPS_UI_METHOD_PBC 0
+#define WPS_UI_ACT_ADDENROLLEE 0
+#define WPS_UI_CMD_START 0
+#define WPS_UI_PBC_SW 0
+#define WPS_UI_CMD_STOP 0
+#define WPS_UI_ACT_NONE 0
 #endif
 
 #ifdef RTCONFIG_QTN

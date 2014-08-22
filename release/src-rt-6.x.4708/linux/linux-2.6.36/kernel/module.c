@@ -969,6 +969,7 @@ static int check_version(Elf_Shdr *sechdrs,
 			 const unsigned long *crc,
 			 const struct module *crc_owner)
 {
+#if 0
 	unsigned int i, num_versions;
 	struct modversion_info *versions;
 
@@ -1003,6 +1004,9 @@ bad_version:
 	printk("%s: disagrees about version of symbol %s\n",
 	       mod->name, symname);
 	return 0;
+#else
+        return 1;
+#endif
 }
 
 static inline int check_modstruct_version(Elf_Shdr *sechdrs,

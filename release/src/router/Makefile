@@ -213,12 +213,13 @@ endif
 
 
 obj-y += rc
-obj-y += rom
+#obj-y += rom
 obj-y += others
 obj-y += busybox
 obj-y += httpd
 obj-y += www
 obj-y += bridge
+#dhcp hear
 obj-y += dnsmasq
 obj-y += etc
 # obj-y += vlan # use Busybox vconfig
@@ -765,6 +766,10 @@ else
 endif
 	cd $(TARGETDIR)/lib/modules && rm -f */source || true
 
+	# add by janson
+	#cd $(TARGETDIR)/lib/modules/*/kernel/drivers/net && find /projects/xunlei/lib/modules/2.6.36.4brcmarm+/kernel/drivers/net -name "*.ko" -print0 |xargs -0 -t -I {}  cp {} ./ || true
+	#cd $(LINUXDIR) && depmod -ae -F System.map -b /projects/asuswrt-merlin/release/src/router/arm-uclibc/target 2.6.36.4brcmarm+ || true
+
 # misc
 	for dir in $(wildcard $(patsubst %,$(INSTALLDIR)/%,$(obj-y))) ; do \
 		(cd $${dir} && tar cpf - .) | (cd $(TARGETDIR) && tar xpf -) \
@@ -1272,7 +1277,10 @@ ifeq ($(RTCONFIG_HTTPS),y)
 	$(STRIP) $(INSTALLDIR)/openssl/usr/lib/libssl.so.1.0.0
 	cd $(INSTALLDIR)/openssl/usr/lib && ln -sf libssl.so.1.0.0 libssl.so
 endif
-
+#	add by janson
+	sed 's/#.*//g;s/[ \t]\+/ /g;s/^[ \t]*//;s/[ \t]*$$//;/^$$/d' < openssl/apps/openssl.cnf > openssl/openssl.cnf.new
+	install -D openssl/openssl.cnf.new $(INSTALLDIR)/openssl/usr/sbin/openssl.cnf
+	rm -f openssl/openssl.cnf.new
 
 mssl:	openssl
 

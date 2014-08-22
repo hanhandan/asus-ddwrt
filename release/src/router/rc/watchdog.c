@@ -2233,7 +2233,7 @@ void watchdog(int sig)
 	period_chk_cnt();
 
 	/* handle button */
-	btn_check();
+	//btn_check();
 	if(nvram_match("asus_mfg", "0")
 #ifdef RTCONFIG_LED_BTN
 		&& nvram_get_int("AllLED")

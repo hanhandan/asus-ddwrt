@@ -11,7 +11,7 @@ DSTDIR = $(INSTALLDIR)/lib/modules/$(LINUX_KERNEL)/kernel/fs
 else
 ifeq ($(RTCONFIG_BCMARM),y)
 SRCFILE = broadcom_arm
-DSTDIR = $(INSTALLDIR)/lib/modules/2.6.36.4brcmarm/kernel/fs
+DSTDIR = $(INSTALLDIR)/lib/modules/2.6.36.4brcmarm+/kernel/fs
 else
 SRCFILE = broadcom
 DSTDIR = $(INSTALLDIR)/lib/modules/2.6.22.19/kernel/fs

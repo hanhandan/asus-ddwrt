@@ -145,9 +145,9 @@ err:
 bool
 et_capable(char *ifname, char *cap)
 {
+#if 0
 	char var[32], *next;
 	char caps[ET_CAP_BUF_LEN];
-
 	if (!cap)
 		return FALSE;
 
@@ -158,6 +158,6 @@ et_capable(char *ifname, char *cap)
 		if (strncmp(var, cap, sizeof(var)) == 0)
 			return TRUE;
 	}
-
+#endif
 	return FALSE;
 }

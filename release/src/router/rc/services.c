@@ -2729,8 +2729,10 @@ start_telnetd(void)
 		return 0;
 	}
 
+#if 0
 	if (!nvram_match("telnetd_enable", "1") && !nvram_match("Ate_telnet", "1"))
 		return 0;
+#endif
 
 	if (pids("telnetd"))
 		killall_tk("telnetd");
@@ -4661,7 +4663,6 @@ check_ddr_done:
 		/* for security concern, even if you stop ftp daemon, it is better to restart firewall to clean FTP port: 21. */
 		start_firewall(wan_primary_ifunit(), 0);
 	}
-#endif
 	else if (strcmp(script, "ftpd_force") == 0)
 	{
 		nvram_set("st_ftp_force_mode", nvram_safe_get("st_ftp_mode"));
@@ -4673,6 +4674,7 @@ check_ddr_done:
 		/* for security concern, even if you stop ftp daemon, it is better to restart firewall to clean FTP port: 21. */
 		start_firewall(wan_primary_ifunit(), 0);
 	}
+#endif
 #ifdef RTCONFIG_SAMBASRV
 	else if (strcmp(script, "samba") == 0)
 	{
