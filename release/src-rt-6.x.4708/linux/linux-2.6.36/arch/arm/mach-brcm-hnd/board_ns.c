@@ -845,7 +845,6 @@ init_nflash_mtd_partitions(hndnand_t *nfl, struct mtd_info *mtd, size_t size)
                 bcm947xx_nflash_parts[nparts].name = "nvboot";
 		bcm947xx_nflash_parts[nparts].size = 0x100000;
 		bcm947xx_nflash_parts[nparts].offset = offset;
-		bcm947xx_nflash_parts[nparts].mask_flags = MTD_WRITEABLE;
 		offset = bcm947xx_nflash_parts[nparts-1].size + bcm947xx_nflash_parts[nparts].size;
 		nparts++;
 
