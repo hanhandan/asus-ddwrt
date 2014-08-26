@@ -4153,6 +4153,8 @@ again:
 #ifndef RTCONFIG_TMOBILE
 				if (!nvram_match("nflash_swecc", "1"))
 #endif
+/* added by jannson */
+#error NOT USE DUAL TRX
 				{
 					_dprintf(" Write FW to the 2nd partition.\n");
 	                                if (nvram_contains_word("rc_support", "nandflash"))     /* RT-AC56S,U/RT-AC68U/RT-N16UHP */

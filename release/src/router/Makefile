@@ -213,7 +213,10 @@ endif
 
 
 obj-y += rc
-#obj-y += rom
+
+#web https use it
+obj-y += rom
+
 obj-y += others
 obj-y += busybox
 obj-y += httpd

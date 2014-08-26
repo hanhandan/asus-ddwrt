@@ -34,10 +34,10 @@
 #define NFL_SECTOR_SIZE			512
 #define NFL_TABLE_END			0xffffffff
 
-#define NFL_BOOT_SIZE			0x200000
+#define NFL_BOOT_SIZE			0x400000
 /* ASUS LINUX MTD SIZE */
 #if CONFIG_LINUX_MTD == 32
-#define NFL_BOOT_OS_SIZE		0x2000000
+#define NFL_BOOT_OS_SIZE		((2*0xf00000)+(NFL_BOOT_SIZE))
 #elif CONFIG_LINUX_MTD == 48
 #define NFL_BOOT_OS_SIZE                0x3000000
 #elif CONFIG_LINUX_MTD == 64
@@ -50,7 +50,8 @@
 #define NFL_BBT_SIZE			0x100000
 
 #ifdef __ARM_ARCH_7A__
-#define NFL_BIG_BOOT_SIZE		0x800000	/* 8 MB */
+/* using xunlei partition */
+#if 0
 #define NFL_BIG_BOOT_OS_SIZE		0x2600000	/* 38 MB */
 #define NFL_1M_BLOCK_SIZE		1024		/* KB */
 
@@ -58,6 +59,11 @@
 						NFL_BIG_BOOT_SIZE : NFL_BOOT_SIZE)
 #define nfl_boot_os_size(nfl)		((((nfl)->blocksize >> 10) >= NFL_1M_BLOCK_SIZE) ? \
 						NFL_BIG_BOOT_OS_SIZE : NFL_BOOT_OS_SIZE)
+#endif
+
+#define nfl_boot_size(nfl)		NFL_BOOT_SIZE
+#define nfl_boot_os_size(nfl)		NFL_BOOT_OS_SIZE
+
 #else
 #define nfl_boot_size(nfl)		NFL_BOOT_SIZE
 #define nfl_boot_os_size(nfl)		NFL_BOOT_OS_SIZE

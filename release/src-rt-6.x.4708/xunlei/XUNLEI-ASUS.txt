@@ -1,0 +1,67 @@
+升级有风险！
+
+固件功能：
+2.4g无线
+USB可用
+telnet可用
+http可用（节为节约空间，把图片都干掉了）
+网口可用（不确定LED的GPIO是否一致，把LED干掉，所以是不亮灯的）
+samba本来可用，但迅雷的linux分区只能放15M大小的固件，被干掉了。
+双网卡可用吗？（无测试）
+拨号无测试
+其它好多功能没测试...
+
+xunlei路由器有两个分区，为了安全，建议使用0分区升级ASUS镜像，方法如下：
+
+让cfe从0镜像引导系统
+# nvram show | grep load
+size: 55441 bytes (10095 left)
+apps_download_file=
+apps_download_percent=
+downloader_speed_peak=500
+downloader_wan_status=1
+flash_blocks_load=1
+reload_svc_radio=0
+second_image_load=on
+xl_app_load=1
+
+上面是原来的值，下面修改使用0分区启动
+# nvram set second_image_load=off
+# nvram set xl_app_load=0
+# nvram commit
+
+# nvboot show|grep second_image_load
+second_image_load=on
+size: 34429 bytes (31107 left)
+
+修改从0分区启动
+# nvboot set second_image_load=off
+# nvboot show|grep second_image_load
+second_image_load=off
+size: 34430 bytes (31106 left)
+# nvboot commit
+
+升级到0镜像
+# upgrade_nand linux.img 0
+升级完之后，请在ASUS页面进行一次恢复出厂设置
+
+使用说明
+U盘目录：
+/tmp/mnt/
+
+远程登录
+telnet 192.168.1.1
+
+用户名密码
+admin
+admin
+
+因为裁剪了太多的功能，所以在web上点某个页面可能导致web进程挂掉，重启web的方法：
+telnet 192.168.1.1
+service start_httpd
+
+说到最关键的，如何升级回到xunlei固件？
+听七弦说，可以把upgrad_nand程序放到U盘里，并把过去的固件也放到U盘里，用upgrade_nand升级就可以了。
+或者，可以在ASUS里改nvram信息
+或者用串口，在cfe中改nvram信息，让它从1分区启动（之前没覆盖）。 我只验证了这个。
+

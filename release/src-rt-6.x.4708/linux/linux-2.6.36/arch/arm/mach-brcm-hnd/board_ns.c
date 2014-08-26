@@ -146,7 +146,9 @@ static int __init rootfs_mtdblock(void)
 		else
 			return 3;
 #else
-		return 3;
+                /* added by janson for xunlei */
+                /* return 3 */
+		return 4;
 #endif
 	}
 
@@ -395,7 +397,7 @@ static uint32 boot_partition_size(uint32 flash_phys) {
 #define CRASHLOG_PARTS 0
 #endif
 /* boot;nvram;kernel;rootfs;empty */
-#define FLASH_PARTS_NUM	(5+MTD_PARTS+PLC_PARTS+FAILSAFE_PARTS+CRASHLOG_PARTS)
+#define FLASH_PARTS_NUM	(10+MTD_PARTS+PLC_PARTS+FAILSAFE_PARTS+CRASHLOG_PARTS)
 
 static struct mtd_partition bcm947xx_flash_parts[FLASH_PARTS_NUM] = {{0}};
 
@@ -688,7 +690,7 @@ EXPORT_SYMBOL(init_mtd_partitions);
 
 #ifdef	CONFIG_MTD_NFLASH
 
-#define NFLASH_PARTS_NUM	7
+#define NFLASH_PARTS_NUM	9
 static struct mtd_partition bcm947xx_nflash_parts[NFLASH_PARTS_NUM] = {{0}};
 
 static uint
@@ -716,7 +718,7 @@ lookup_nflash_rootfs_offset(hndnand_t *nfl, struct mtd_info *mtd, int offset, si
 
 	/* Look at every block boundary till 16MB; higher space is reserved for application data. */
 	blocksize = mtd->erasesize;
-	printk("lookup_nflash_rootfs_offset: offset = 0x%x\n", offset);
+	printk("lookup_nflash_rootfs_offset: blocksize = 0x%x offset = 0x%x\n", blocksize, offset);
 	for (off = offset; off < offset + size; off += blocksize) {
 		mask = blocksize - 1;
 		blk_offset = off & ~mask;
@@ -770,8 +772,21 @@ lookup_nflash_rootfs_offset(hndnand_t *nfl, struct mtd_info *mtd, int offset, si
 	if (buf)
 		kfree(buf);
 
+        printk("%s#%d: shift=0x%08x off=0x%08x\n", __FUNCTION__, __LINE__, shift, off);
 	return shift + off;
 }
+
+#if 0
+struct mtd_partition *
+init_mtd_partitions(hndsflash_t *sfl_info, struct mtd_info *mtd, size_t size)
+{
+    char* name[] = {"boot", "nvboot", "nvram", "linux0", "rootfs0", "xlapps0", "linux1", "rootfs1", "xlapps1"};
+    int   size[] = {"0x80000", "0x100000", "0x280000", "0xf00000", "0xcd6e8c", "0xf00000", "0xf00000", "0xcd6e8c", "0xf00000"};
+
+    return bcm947xx_flash_parts;
+}
+#endif
+
 
 struct mtd_partition *
 init_nflash_mtd_partitions(hndnand_t *nfl, struct mtd_info *mtd, size_t size)
@@ -826,6 +841,13 @@ init_nflash_mtd_partitions(hndnand_t *nfl, struct mtd_info *mtd, size_t size)
 		//bcm947xx_nflash_parts[nparts].mask_flags = MTD_WRITEABLE; /* forces on read only */
 		offset = bcm947xx_nflash_parts[nparts].size;
 		nparts++;
+		
+                bcm947xx_nflash_parts[nparts].name = "nvboot";
+		bcm947xx_nflash_parts[nparts].size = 0x100000;
+		bcm947xx_nflash_parts[nparts].offset = offset;
+		bcm947xx_nflash_parts[nparts].mask_flags = MTD_WRITEABLE;
+		offset = bcm947xx_nflash_parts[nparts-1].size + bcm947xx_nflash_parts[nparts].size;
+		nparts++;
 
 		/* Setup NVRAM MTD partition */
 		bcm947xx_nflash_parts[nparts].name = "nvram";
@@ -846,9 +868,11 @@ init_nflash_mtd_partitions(hndnand_t *nfl, struct mtd_info *mtd, size_t size)
 		} else
 #endif
 		{
-			bcm947xx_nflash_parts[nparts].size = nparts ?
+			bcm947xx_nflash_parts[nparts].size = ( nparts ?
 				(nfl_boot_os_size(nfl) - nfl_boot_size(nfl)) :
-				nfl_boot_os_size(nfl);
+				nfl_boot_os_size(nfl) );
+                        printk("%d 0x%x,0x%x os_size=0x%llx\n"
+                                , nparts, nfl_boot_os_size(nfl), nfl_boot_size(nfl), bcm947xx_nflash_parts[nparts].size);
 		}
 		bcm947xx_nflash_parts[nparts].offset = offset;
 
@@ -876,18 +900,48 @@ init_nflash_mtd_partitions(hndnand_t *nfl, struct mtd_info *mtd, size_t size)
 		offset = nfl_boot_os_size(nfl);
 
 		nparts++;
+                
+                /* For xunlei partition */
+                bcm947xx_nflash_parts[nparts].name = "linux0";
+		bcm947xx_nflash_parts[nparts].size = 0xF00000;
+		bcm947xx_nflash_parts[nparts].offset = offset-(2*0xF00000);
+		nparts++;
 
+                bcm947xx_nflash_parts[nparts].name = "xlapps0";
+		bcm947xx_nflash_parts[nparts].size = 0xF00000;
+		bcm947xx_nflash_parts[nparts].offset = (offset-0xF00000);
+		nparts++;
+                
+                bcm947xx_nflash_parts[nparts].name = "linux1";
+		bcm947xx_nflash_parts[nparts].size = 0xF00000;
+		bcm947xx_nflash_parts[nparts].offset = offset;
+		offset +=  bcm947xx_nflash_parts[nparts].size;
+		nparts++;
+                
+                /* bcm947xx_nflash_parts[nparts].name = "rootfs2";
+                bcm947xx_nflash_parts[nparts].size = nfl_boot_os_size(nfl) - shift;
+                bcm947xx_nflash_parts[nparts].offset = offset - nfl_boot_os_size(nfl) + shift;
+                bcm947xx_nflash_parts[nparts].mask_flags = MTD_WRITEABLE;
+                nparts++; */
+
+                bcm947xx_nflash_parts[nparts].name = "xlapps1";
+		bcm947xx_nflash_parts[nparts].size = 0xF00000;
+		bcm947xx_nflash_parts[nparts].offset = offset;
+		offset +=  bcm947xx_nflash_parts[nparts].size;
+		nparts++;
+                
 #ifdef CONFIG_DUAL_TRX /* ASUS Setup 2nd kernel MTD partition */
                 bcm947xx_nflash_parts[nparts].name = "linux2";
                 bcm947xx_nflash_parts[nparts].size = NFL_BOOT_OS_SIZE;
                 bcm947xx_nflash_parts[nparts].offset = NFL_BOOT_OS_SIZE;
                 nparts++;
-                /* Setup rootfs MTD partition */
+                
                 bcm947xx_nflash_parts[nparts].name = "rootfs2";
                 bcm947xx_nflash_parts[nparts].size = NFL_BOOT_OS_SIZE - shift;
                 bcm947xx_nflash_parts[nparts].offset = NFL_BOOT_OS_SIZE + shift;
                 bcm947xx_nflash_parts[nparts].mask_flags = MTD_WRITEABLE;
                 nparts++;
+
 #endif /* End of ASUS 2nd FW partition*/
 
 #ifdef CONFIG_FAILSAFE_UPGRADE
