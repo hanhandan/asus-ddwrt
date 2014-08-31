@@ -296,7 +296,7 @@ endif
 #endif
 #endif
 
-	mkimg_xl -t 0 -v V1.5.0096 -p RS1403 -b unknown -i ./image/RT-AC56U_3.0.0.4_376.46_alpha2.trx  -o /tftpboot/linux.img
+	mkimg_xl -t 0 -v V1.5.0096 -p RS1403 -b unknown -i ./image/$(IMGNAME).trx  -o /tftpboot/linux.img
 	@echo ""
 
 bin_file:
