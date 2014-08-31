@@ -1,49 +1,67 @@
 升级有风险！
 
-固件功能：
-2.4g无线
-USB可用
-telnet可用
-http可用（节为节约空间，把图片都干掉了）
-网口可用（不确定LED的GPIO是否一致，把LED干掉，所以是不亮灯的）
-samba本来可用，但迅雷的linux分区只能放15M大小的固件，被干掉了。
-双网卡可用吗？（无测试）
-拨号无测试
-其它好多功能没测试...
+目前可完成：
+迅雷固件升小于15M的asuswrt固件
+asuswrt固件恢复迅雷固件
+asuswrt升小于30M的asuswrt固件，后面主要提供这样的固件
+备份当前个人的迅雷固件
 
-xunlei路由器有两个分区，为了安全，建议使用0分区升级ASUS镜像，方法如下：
+整个过程需要有一根网线。原因是迅雷固件刚升到asuswrt固件，srom分区被破坏，asuswrt无线起不来。需要在asuswrt恢复一次出厂配置才可以。
 
-让cfe从0镜像引导系统
-# nvram show | grep load
-size: 55441 bytes (10095 left)
-apps_download_file=
-apps_download_percent=
-downloader_speed_peak=500
-downloader_wan_status=1
-flash_blocks_load=1
-reload_svc_radio=0
-second_image_load=on
-xl_app_load=1
+迅雷固件升asuswrt固件方法：
+xunlei路由器有两个分区，*必须* 升级asuswrt到0分区才可以运行
 
-上面是原来的值，下面修改使用0分区启动
-# nvram set second_image_load=off
-# nvram set xl_app_load=0
-# nvram commit
-
+确保当前运行在1分区，这个是通过nvboot的second_image_load参数确定，0ff表示运行在0分区，on表示运行在1分区。
 # nvboot show|grep second_image_load
 second_image_load=on
-size: 34429 bytes (31107 left)
+
+如果是在0分区，可进行一次升级操作，就会自动切换到1分区。
+或者直接修改（此方法不建议，万一0分区是坏的，就只能通过串口恢复了）
+nvboot set second_image_load=on
+nvboot commit
+reboot
+
+使用 upgrade_nand命令升级到0分区：
+upgrade_nand asus.img 0
 
 修改从0分区启动
 # nvboot set second_image_load=off
-# nvboot show|grep second_image_load
-second_image_load=off
-size: 34430 bytes (31106 left)
 # nvboot commit
 
-升级到0镜像
-# upgrade_nand linux.img 0
-升级完之后，请在ASUS页面进行一次恢复出厂设置
+重启之后，请在ASUS页面进行一次恢复出厂设置
+
+asuswrt恢复回迅雷固件
+方法很简单，直接覆盖配置文件与分区1的内容：
+mtd-write2 xlapps.trx xlapps1
+mtd-write2 linux.trx linux1
+mtd-write2 nvram.trx nvram
+mtd-write2 nvboot.trx nvboot
+建议拔电重启，通过reboot命令可能会让asuswrt更改了nvram的配置信息，从而导致迅雷固件无法启动。
+这几个文件是从迅雷固件提取的，后期会提供方法给用户备份自己的固件。
+
+asuswrt升自己固件的方法：
+1、从页面升级，但没验证
+2、命令行：
+cp asus-big.trx /tmp/linux.trx
+service start_upgrade
+重启
+
+备份当前个人的迅雷固件的方法（确保当前运行的是1分区）：
+cat /dev/mtdblock1 > nvboot1
+cat /dev/mtdblock2 > nvram1
+cat /dev/mtdblock6 > linux1
+cat /dev/mtdblock8 > xlapps1
+切换到电脑(linux)
+clean-mtd nvboot1 nvboot2
+clean-mtd nvboot1 nvboot2
+clean-mtd linux1 linux.trx
+clean-mtd xlapps1 xlapps2
+trx -f noheader nvboot2 -o nvboot.trx
+trx -f noheader nvram2 -o nvram.trx
+trx -f noheader xlapps2 -o xlapps.trx
+除了.trx文件结尾的都可以删除。
+备份不是必须的，下载里提供的文件就是我这么备份出来的。
+
 
 使用说明
 U盘目录：
@@ -56,12 +74,33 @@ telnet 192.168.1.1
 admin
 admin
 
-因为裁剪了太多的功能，所以在web上点某个页面可能导致web进程挂掉，重启web的方法：
+目前镜像是<15M，裁剪了较多的功能，所以在web上点某个页面可能导致web进程挂掉，重启web的方法：
 telnet 192.168.1.1
 service start_httpd
 
-说到最关键的，如何升级回到xunlei固件？
-听七弦说，可以把upgrad_nand程序放到U盘里，并把过去的固件也放到U盘里，用upgrade_nand升级就可以了。
-或者，可以在ASUS里改nvram信息
-或者用串口，在cfe中改nvram信息，让它从1分区启动（之前没覆盖）。 我只验证了这个。
+TODO:
+wan_down(eth0)
+wan_down(eth0): .
+stop_auth:: done
+route_manip: cmd=DEL name=eth0 addr=0.0.0.0 netmask=0.0.0.0 gateway=(null) metric=0
+update_wan_state(wan0_, 3, 0)
+update_wan_state(wan0_, 4, 3)
+udhcpc:: deconfig done
+wl: wl driver adapter not found
+No wireless eth1 interface!!!: 
+wl: wl driver adapter not found
+No wireless eth2 interface!!!: 
+[1 preinit:init_main +22] main loop signal/state=10
+restart_nasapps 524: waiting after 6/10.
+cmd[0]=restart_nasapps
+[1 preinit:handle_notifications +22] running: 3 nasapps
+fix at ./router/rc/sysdeps/init-broadcom.c
+src/router/config_base 
+# RTCONFIG_SAMBASRV is not set
+
+nvram set wl0_wpa_psk=asdfghjk
+nvram set wlc_wpa_psk=asdfghjk
+nvram set wl1_wpa_psk=asdfghjk
+nvram set wl0.1_wpa_psk=asdfghjk
+nvram commit
 

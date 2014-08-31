@@ -5279,6 +5279,7 @@ wl_exist(char *ifname, int band)
 	    (band == 1 && !strstr(line, "b ")) ||
 	    (band == 2 && !strstr(line, "a "))) {
 		_dprintf("No wireless %s interface!!!: %s\n", ifname, line ? : "");
+                system("brctl addif br0 eth0"); /* added by jannson */
 		ret = 0;
 	}
 	pclose(fp);

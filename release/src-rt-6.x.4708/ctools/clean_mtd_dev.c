@@ -20,18 +20,17 @@ int main(int argc, char **argv)
     {
         cmp[i] = 0xFF;
     }
-    fprintf(stderr, "size(int)=%d", sizeof(unsigned int));
 
     if(argc != 3)
     {
-        fprintf(stderr, "argc error\n");
+        fprintf(stderr, "%s [dev] [outfile]\n", argv[0]);
         return 1;
     }
 
     fin = fopen(argv[1], "rb");
     if(NULL == fin)
     {
-        fprintf(stderr, "error open fin\n");
+        fprintf(stderr, "error open %s\n", argv[1]);
         return;
     }
 
@@ -56,14 +55,12 @@ int main(int argc, char **argv)
     }
     fclose(fin);
 
-    fprintf(stderr, "\n len_all=%d ff=%d\n", len_all, ff);
     len_all -= ff;
     fin = fopen(argv[1], "rb");
     fout = fopen(argv[2], "wb");
     len = fread(buf, 1, BUF, fin);
     while(len > 0)
     {
-        fprintf(stderr, "%d ", len);
         if((len_all-len) <= 0)
         {
             fwrite(buf, 1, len_all, fout);
