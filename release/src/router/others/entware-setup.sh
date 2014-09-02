@@ -104,5 +104,5 @@ eval sed -i 's,__Partition__,$entPartition,g' /jffs/scripts/post-mount
 chmod +x /jffs/scripts/post-mount
 
 echo -e "$INFO Starting Entware deployment....\n"
-wget http://entware.wl500g.info/binaries/entware/installer/entware_install.sh
-sh ./entware_install.sh
+wget http://dl.lazyzhu.com/file/entware-arm/installer/entware-arm_install.sh
+sh ./entware-arm_install.sh
