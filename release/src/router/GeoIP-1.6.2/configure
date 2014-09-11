@@ -11699,7 +11699,8 @@ _ACEOF
 fi
 
 done
-
+#echo 'janson' $ac_cv_func_malloc_0_nonnull
+#exit 1
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for GNU libc compatible malloc" >&5
 $as_echo_n "checking for GNU libc compatible malloc... " >&6; }
 if test "${ac_cv_func_malloc_0_nonnull+set}" = set; then :
@@ -11736,6 +11737,8 @@ fi
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_malloc_0_nonnull" >&5
 $as_echo "$ac_cv_func_malloc_0_nonnull" >&6; }
+#echo 'jannson' $ac_cv_func_malloc_0_nonnull
+#exit 1
 if test $ac_cv_func_malloc_0_nonnull = yes; then :
 
 $as_echo "#define HAVE_MALLOC 1" >>confdefs.h
@@ -11766,6 +11769,10 @@ _ACEOF
 fi
 
 done
+
+#ac_cv_func_realloc_0_nonnull=no
+
+#jannson
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for GNU libc compatible realloc" >&5
 $as_echo_n "checking for GNU libc compatible realloc... " >&6; }
@@ -11808,6 +11815,9 @@ if test $ac_cv_func_realloc_0_nonnull = yes; then :
 $as_echo "#define HAVE_REALLOC 1" >>confdefs.h
 
 else
+  echo "oooo" $ac_cv_func_realloc_0_nonnull $cross_compiling
+  exit 1
+
   $as_echo "#define HAVE_REALLOC 0" >>confdefs.h
 
    case " $LIBOBJS " in

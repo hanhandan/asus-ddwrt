@@ -1,0 +1,14 @@
+conffile_list.lo: conffile_list.c conffile_list.h nv_pair_list.h \
+ nv_pair.h void_list.h list.h conffile.h
+
+conffile_list.h:
+
+nv_pair_list.h:
+
+nv_pair.h:
+
+void_list.h:
+
+list.h:
+
+conffile.h:

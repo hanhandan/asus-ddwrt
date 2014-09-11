@@ -1,0 +1,329 @@
+pdnsd-main.o: main.c ../config.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/stdlib.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/features.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_config.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/sys/cdefs.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../lib/gcc/arm-brcm-linux-uclibcgnueabi/4.5.3/include/stddef.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/waitflags.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/waitstatus.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/endian.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/endian.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/byteswap.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/byteswap.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/byteswap-common.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/sys/types.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/types.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/wordsize.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/typesizes.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/pthreadtypes.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/sched.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/time.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/sys/select.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/select.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/sigset.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/time.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/sys/sysmacros.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/xlocale.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/locale.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_locale.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/alloca.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/sys/stat.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/stat.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/stdio.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_stdio.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/wchar.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/wchar.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_mutex.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/pthread.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/sched.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_clk_tck.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/signal.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/initspin.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/sigthread.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_pthread.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../lib/gcc/arm-brcm-linux-uclibcgnueabi/4.5.3/include/stdarg.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/stdio_lim.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/signum.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/siginfo.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/sigaction.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/sigcontext.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/asm/sigcontext.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/sigstack.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/sys/ucontext.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/sys/procfs.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/sys/time.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/sys/user.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/unistd.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/posix_opt.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/environments.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/confname.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/getopt.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/syslog.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/sys/syslog.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/pwd.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/fcntl.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/fcntl.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/uio.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/string.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/errno.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/errno.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/linux/errno.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/asm/errno.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/asm-generic/errno.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/asm-generic/errno-base.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/ctype.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_touplow.h \
+ consts.h cache.h ipvers.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/sys/socket.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/sys/uio.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/socket.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../lib/gcc/arm-brcm-linux-uclibcgnueabi/4.5.3/include-fixed/limits.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../lib/gcc/arm-brcm-linux-uclibcgnueabi/4.5.3/include-fixed/syslimits.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/limits.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/posix1_lim.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/local_lim.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/linux/limits.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_local_lim.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/posix2_lim.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/xopen_lim.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/sockaddr.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/asm/socket.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/asm/sockios.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/netinet/in.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../lib/gcc/arm-brcm-linux-uclibcgnueabi/4.5.3/include/stdint.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/stdint.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/in.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/arpa/inet.h \
+ rr_types.h list.h pdnsd_assert.h dns.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/net/if.h \
+ /projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/inttypes.h \
+ conff.h status.h servers.h dns_answer.h dns_query.h error.h thread.h \
+ helpers.h icmp.h hash.h
+
+../config.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/stdlib.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/features.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_config.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/sys/cdefs.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../lib/gcc/arm-brcm-linux-uclibcgnueabi/4.5.3/include/stddef.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/waitflags.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/waitstatus.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/endian.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/endian.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/byteswap.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/byteswap.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/byteswap-common.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/sys/types.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/types.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/wordsize.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/typesizes.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/pthreadtypes.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/sched.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/time.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/sys/select.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/select.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/sigset.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/time.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/sys/sysmacros.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/xlocale.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/locale.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_locale.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/alloca.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/sys/stat.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/stat.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/stdio.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_stdio.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/wchar.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/wchar.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_mutex.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/pthread.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/sched.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_clk_tck.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/signal.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/initspin.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/sigthread.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_pthread.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../lib/gcc/arm-brcm-linux-uclibcgnueabi/4.5.3/include/stdarg.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/stdio_lim.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/signum.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/siginfo.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/sigaction.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/sigcontext.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/asm/sigcontext.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/sigstack.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/sys/ucontext.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/sys/procfs.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/sys/time.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/sys/user.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/unistd.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/posix_opt.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/environments.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/confname.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/getopt.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/syslog.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/sys/syslog.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/pwd.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/fcntl.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/fcntl.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/uio.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/string.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/errno.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/errno.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/linux/errno.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/asm/errno.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/asm-generic/errno.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/asm-generic/errno-base.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/ctype.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_touplow.h:
+
+consts.h:
+
+cache.h:
+
+ipvers.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/sys/socket.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/sys/uio.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/socket.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../lib/gcc/arm-brcm-linux-uclibcgnueabi/4.5.3/include-fixed/limits.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../lib/gcc/arm-brcm-linux-uclibcgnueabi/4.5.3/include-fixed/syslimits.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/limits.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/posix1_lim.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/local_lim.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/linux/limits.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_local_lim.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/posix2_lim.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/xopen_lim.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/sockaddr.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/asm/socket.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/asm/sockios.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/netinet/in.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../lib/gcc/arm-brcm-linux-uclibcgnueabi/4.5.3/include/stdint.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/stdint.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/bits/in.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/arpa/inet.h:
+
+rr_types.h:
+
+list.h:
+
+pdnsd_assert.h:
+
+dns.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/net/if.h:
+
+/projects/asuswrt-merlin/release/src-rt-6.x.4708/toolchains/hndtools-arm-linux-2.6.36-uclibc-4.5.3/bin/../arm-brcm-linux-uclibcgnueabi/sysroot/usr/include/inttypes.h:
+
+conff.h:
+
+status.h:
+
+servers.h:
+
+dns_answer.h:
+
+dns_query.h:
+
+error.h:
+
+thread.h:
+
+helpers.h:
+
+icmp.h:
+
+hash.h:
